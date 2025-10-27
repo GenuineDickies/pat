@@ -228,4 +228,69 @@ function generatePagination($currentPage, $totalPages, $baseUrl) {
     $pagination .= '</ul></nav>';
     return $pagination;
 }
+
+// Format phone for display (alias for consistency)
+function formatPhone($phone) {
+    return formatPhoneNumber($phone);
+}
+
+// Generate CSRF token
+function generateCSRFToken() {
+    if (!isset($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = generateRandomString(32);
+    }
+    return $_SESSION['csrf_token'];
+}
+
+// Truncate text with ellipsis
+function truncateText($text, $maxLength = 100) {
+    if (strlen($text) <= $maxLength) {
+        return $text;
+    }
+    return substr($text, 0, $maxLength - 3) . '...';
+}
+
+// Get current user info
+function getCurrentUser() {
+    if (!isLoggedIn()) {
+        return null;
+    }
+    return [
+        'id' => $_SESSION['user_id'] ?? null,
+        'name' => $_SESSION['user_name'] ?? 'User',
+        'email' => $_SESSION['user_email'] ?? '',
+        'role' => $_SESSION['user_role'] ?? 'user'
+    ];
+}
+
+// Check if user has any of the given permissions
+function hasAnyPermission($permissions) {
+    if (!isLoggedIn()) {
+        return false;
+    }
+    
+    if (!is_array($permissions)) {
+        $permissions = [$permissions];
+    }
+    
+    foreach ($permissions as $permission) {
+        if (hasPermission($permission)) {
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+// Get setting value helper
+function getSetting($key, $default = null) {
+    try {
+        require_once BACKEND_PATH . 'models/Setting.php';
+        $settingModel = new Setting();
+        return $settingModel->getValue($key, $default);
+    } catch (Exception $e) {
+        error_log("Error getting setting $key: " . $e->getMessage());
+        return $default;
+    }
+}
 ?>
