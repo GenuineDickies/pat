@@ -229,7 +229,8 @@ function generatePagination($currentPage, $totalPages, $baseUrl) {
     return $pagination;
 }
 
-// Format phone for display (alias for consistency)
+// Format phone for display (alias for consistency in views)
+// This alias exists for consistency with other format* functions used in views
 function formatPhone($phone) {
     return formatPhoneNumber($phone);
 }
@@ -282,12 +283,26 @@ function hasAnyPermission($permissions) {
     return false;
 }
 
-// Get setting value helper
+// Get setting value helper with caching
 function getSetting($key, $default = null) {
+    static $settingModel = null;
+    static $cache = [];
+    
+    // Check cache first
+    if (isset($cache[$key])) {
+        return $cache[$key];
+    }
+    
     try {
-        require_once BACKEND_PATH . 'models/Setting.php';
-        $settingModel = new Setting();
-        return $settingModel->getValue($key, $default);
+        // Initialize model once
+        if ($settingModel === null) {
+            require_once BACKEND_PATH . 'models/Setting.php';
+            $settingModel = new Setting();
+        }
+        
+        $value = $settingModel->getValue($key, $default);
+        $cache[$key] = $value; // Cache the result
+        return $value;
     } catch (Exception $e) {
         error_log("Error getting setting $key: " . $e->getMessage());
         return $default;
