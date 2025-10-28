@@ -16,7 +16,13 @@ class Controller {
         // Extract data for use in view
         extract($data);
 
-        // Define content for layout
+        // If rendering layout itself, just include it directly
+        if ($view === 'layout') {
+            include FRONTEND_PATH . 'pages/layout.php';
+            return;
+        }
+
+        // For other views, capture content then include layout
         ob_start();
         include FRONTEND_PATH . 'pages/' . $view . '.php';
         $content = ob_get_clean();

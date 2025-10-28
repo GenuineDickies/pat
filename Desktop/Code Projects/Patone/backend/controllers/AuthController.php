@@ -17,9 +17,14 @@ class AuthController extends Controller {
             $this->redirect(SITE_URL . 'dashboard');
         }
 
+        // Capture login form content
+        ob_start();
+        include FRONTEND_PATH . 'pages/login.php';
+        $content = ob_get_clean();
+
         $data = [
             'pageTitle' => 'Login',
-            'content' => $this->renderPartial('login')
+            'content' => $content
         ];
 
         $this->render('layout', $data);
