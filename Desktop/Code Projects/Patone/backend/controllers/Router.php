@@ -20,6 +20,17 @@ class Router {
     // Dispatch request to appropriate controller and action
     public function dispatch() {
         $requestMethod = $_SERVER['REQUEST_METHOD'];
+        
+        // Handle method override for browsers that don't support PUT/DELETE
+        if ($requestMethod === 'POST' && isset($_POST['_method'])) {
+            $requestMethod = strtoupper($_POST['_method']);
+        }
+        
+        // Check for X-HTTP-Method-Override header
+        if ($requestMethod === 'POST' && isset($_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE'])) {
+            $requestMethod = strtoupper($_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE']);
+        }
+        
         $requestPath = $this->getRequestPath();
 
         foreach ($this->routes as $route) {

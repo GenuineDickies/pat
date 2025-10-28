@@ -308,4 +308,96 @@ function getSetting($key, $default = null) {
         return $default;
     }
 }
+
+// ========== API Rate Limiting Functions ==========
+
+/**
+ * Check API rate limit for a given identifier (IP address or user ID)
+ * 
+ * @param string $identifier The identifier to check (usually IP address)
+ * @param int $limit Maximum requests allowed per window
+ * @param int $window Time window in seconds (default: 60 seconds)
+ * @return bool True if within limits, false if exceeded
+ */
+function checkApiRateLimit($identifier, $limit = 100, $window = 60) {
+    $cacheFile = LOGS_PATH . 'rate_limit_' . md5($identifier) . '.json';
+    $now = time();
+    
+    // Read existing data
+    $data = [];
+    if (file_exists($cacheFile)) {
+        $content = @file_get_contents($cacheFile);
+        if ($content) {
+            $data = json_decode($content, true) ?? [];
+        }
+    }
+    
+    // Clean old entries
+    $data = array_filter($data, function($timestamp) use ($now, $window) {
+        return ($now - $timestamp) < $window;
+    });
+    
+    // Check if limit exceeded
+    if (count($data) >= $limit) {
+        // Set rate limit headers
+        header('X-RateLimit-Limit: ' . $limit);
+        header('X-RateLimit-Remaining: 0');
+        header('X-RateLimit-Reset: ' . ($now + $window));
+        return false;
+    }
+    
+    // Add current request
+    $data[] = $now;
+    
+    // Save updated data
+    @file_put_contents($cacheFile, json_encode($data));
+    
+    // Set rate limit headers
+    header('X-RateLimit-Limit: ' . $limit);
+    header('X-RateLimit-Remaining: ' . ($limit - count($data)));
+    header('X-RateLimit-Reset: ' . ($now + $window));
+    
+    return true;
+}
+
+/**
+ * Get client IP address
+ * 
+ * @return string Client IP address
+ */
+function getClientIp() {
+    // Check for proxy headers
+    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+        $ip = $_SERVER['HTTP_CLIENT_IP'];
+    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        // Can be a comma-separated list if multiple proxies
+        $ipList = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+        $ip = trim($ipList[0]);
+    } elseif (!empty($_SERVER['HTTP_X_FORWARDED'])) {
+        $ip = $_SERVER['HTTP_X_FORWARDED'];
+    } elseif (!empty($_SERVER['HTTP_FORWARDED_FOR'])) {
+        $ip = $_SERVER['HTTP_FORWARDED_FOR'];
+    } elseif (!empty($_SERVER['HTTP_FORWARDED'])) {
+        $ip = $_SERVER['HTTP_FORWARDED'];
+    } else {
+        $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+    }
+    
+    return $ip;
+}
+
+/**
+ * Clean up old rate limit cache files
+ * Should be called periodically (e.g., via cron)
+ */
+function cleanupRateLimitCache($maxAge = 3600) {
+    $files = glob(LOGS_PATH . 'rate_limit_*.json');
+    $now = time();
+    
+    foreach ($files as $file) {
+        if (file_exists($file) && ($now - filemtime($file)) > $maxAge) {
+            @unlink($file);
+        }
+    }
+}
 ?>
