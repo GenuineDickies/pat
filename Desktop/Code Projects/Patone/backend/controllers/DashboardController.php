@@ -160,5 +160,232 @@ class DashboardController extends Controller {
             $this->jsonError('Error retrieving recent requests');
         }
     }
+
+    // API endpoint for driver status data (AJAX refresh)
+    public function getDriverStatus() {
+        $this->requireLogin();
+
+        try {
+            $drivers = $this->getDriverStats();
+            $this->jsonSuccess($drivers);
+        } catch (Exception $e) {
+            $this->jsonError('Error retrieving driver status');
+        }
+    }
+
+    // API endpoint for chart data
+    public function getChartData() {
+        $this->requireLogin();
+
+        try {
+            $chartData = [
+                'requests_timeline' => $this->getRequestsTimelineData(),
+                'service_type_distribution' => $this->getServiceTypeDistribution(),
+                'driver_performance' => $this->getDriverPerformance(),
+                'hourly_requests' => $this->getHourlyRequests()
+            ];
+            $this->jsonSuccess($chartData);
+        } catch (Exception $e) {
+            $this->jsonError('Error retrieving chart data');
+        }
+    }
+
+    // Get requests timeline data (last 7 days)
+    private function getRequestsTimelineData() {
+        try {
+            $data = $this->db->getRows(
+                "SELECT 
+                    DATE(created_at) as date,
+                    COUNT(*) as total,
+                    SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed,
+                    SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending
+                 FROM service_requests
+                 WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+                 GROUP BY DATE(created_at)
+                 ORDER BY date ASC"
+            );
+            
+            return $data ?: [];
+        } catch (Exception $e) {
+            error_log("Error getting timeline data: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    // Get service type distribution
+    private function getServiceTypeDistribution() {
+        try {
+            $data = $this->db->getRows(
+                "SELECT 
+                    service_type,
+                    COUNT(*) as count
+                 FROM service_requests
+                 WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+                 GROUP BY service_type
+                 ORDER BY count DESC
+                 LIMIT 5"
+            );
+            
+            return $data ?: [];
+        } catch (Exception $e) {
+            error_log("Error getting service type distribution: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    // Get driver performance metrics
+    private function getDriverPerformance() {
+        try {
+            $data = $this->db->getRows(
+                "SELECT 
+                    CONCAT(d.first_name, ' ', d.last_name) as driver_name,
+                    COUNT(sr.id) as total_requests,
+                    SUM(CASE WHEN sr.status = 'completed' THEN 1 ELSE 0 END) as completed,
+                    AVG(TIMESTAMPDIFF(MINUTE, sr.assigned_at, sr.completed_at)) as avg_time
+                 FROM drivers d
+                 LEFT JOIN service_requests sr ON d.id = sr.driver_id
+                 WHERE sr.created_at >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+                 GROUP BY d.id, d.first_name, d.last_name
+                 HAVING total_requests > 0
+                 ORDER BY completed DESC
+                 LIMIT 5"
+            );
+            
+            return $data ?: [];
+        } catch (Exception $e) {
+            error_log("Error getting driver performance: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    // Get hourly request distribution (today)
+    private function getHourlyRequests() {
+        try {
+            $data = $this->db->getRows(
+                "SELECT 
+                    HOUR(created_at) as hour,
+                    COUNT(*) as count
+                 FROM service_requests
+                 WHERE DATE(created_at) = CURDATE()
+                 GROUP BY HOUR(created_at)
+                 ORDER BY hour ASC"
+            );
+            
+            return $data ?: [];
+        } catch (Exception $e) {
+            error_log("Error getting hourly requests: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    // Get recent activity feed
+    public function getRecentActivity() {
+        $this->requireLogin();
+
+        try {
+            $activities = $this->db->getRows(
+                "SELECT 
+                    'request' as type,
+                    sr.id as entity_id,
+                    CONCAT('Service request #', sr.id, ' ', sr.status) as description,
+                    CONCAT(c.first_name, ' ', c.last_name) as actor,
+                    sr.updated_at as timestamp
+                 FROM service_requests sr
+                 LEFT JOIN customers c ON sr.customer_id = c.id
+                 WHERE sr.updated_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)
+                 ORDER BY sr.updated_at DESC
+                 LIMIT 10"
+            );
+            
+            $this->jsonSuccess($activities);
+        } catch (Exception $e) {
+            $this->jsonError('Error retrieving recent activity');
+        }
+    }
+
+    // Get performance metrics
+    public function getPerformanceMetrics() {
+        $this->requireLogin();
+
+        try {
+            $metrics = [
+                'avg_response_time' => $this->getAverageResponseTime(),
+                'completion_rate' => $this->getCompletionRate(),
+                'customer_satisfaction' => $this->getCustomerSatisfaction(),
+                'peak_hours' => $this->getPeakHours()
+            ];
+            
+            $this->jsonSuccess($metrics);
+        } catch (Exception $e) {
+            $this->jsonError('Error retrieving performance metrics');
+        }
+    }
+
+    // Calculate average response time
+    private function getAverageResponseTime() {
+        try {
+            $avgTime = $this->db->getValue(
+                "SELECT AVG(TIMESTAMPDIFF(MINUTE, created_at, assigned_at))
+                 FROM service_requests 
+                 WHERE assigned_at IS NOT NULL 
+                 AND created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)"
+            );
+            
+            return round($avgTime ?: 0, 1);
+        } catch (Exception $e) {
+            return 0;
+        }
+    }
+
+    // Calculate completion rate
+    private function getCompletionRate() {
+        try {
+            $total = $this->db->getValue(
+                "SELECT COUNT(*) FROM service_requests 
+                 WHERE created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)"
+            );
+            
+            $completed = $this->db->getValue(
+                "SELECT COUNT(*) FROM service_requests 
+                 WHERE status = 'completed' 
+                 AND created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)"
+            );
+            
+            return $total > 0 ? round(($completed / $total) * 100, 1) : 0;
+        } catch (Exception $e) {
+            return 0;
+        }
+    }
+
+    // Calculate customer satisfaction (placeholder)
+    private function getCustomerSatisfaction() {
+        // This would need a ratings table in a real implementation
+        return 4.5; // Placeholder
+    }
+
+    // Get peak hours
+    private function getPeakHours() {
+        try {
+            $result = $this->db->getRow(
+                "SELECT 
+                    HOUR(created_at) as peak_hour,
+                    COUNT(*) as request_count
+                 FROM service_requests
+                 WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+                 GROUP BY HOUR(created_at)
+                 ORDER BY request_count DESC
+                 LIMIT 1"
+            );
+            
+            if ($result) {
+                $hour = $result['peak_hour'];
+                $time = date('g A', strtotime("$hour:00"));
+                return $time;
+            }
+            return 'N/A';
+        } catch (Exception $e) {
+            return 'N/A';
+        }
+    }
 }
 ?>

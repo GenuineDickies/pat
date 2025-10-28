@@ -46,6 +46,12 @@ $router->addRoute('GET', '/api/customers', 'ApiController', 'getCustomers');
 $router->addRoute('GET', '/api/requests', 'ApiController', 'getRequests');
 $router->addRoute('GET', '/api/drivers', 'ApiController', 'getDrivers');
 $router->addRoute('GET', '/api/dashboard-stats', 'ApiController', 'getDashboardStats');
+$router->addRoute('GET', '/api/dashboard/stats', 'DashboardController', 'getStats');
+$router->addRoute('GET', '/api/dashboard/recent-requests', 'DashboardController', 'getRecentRequests');
+$router->addRoute('GET', '/api/dashboard/driver-status', 'DashboardController', 'getDriverStatus');
+$router->addRoute('GET', '/api/dashboard/chart-data', 'DashboardController', 'getChartData');
+$router->addRoute('GET', '/api/dashboard/recent-activity', 'DashboardController', 'getRecentActivity');
+$router->addRoute('GET', '/api/dashboard/performance-metrics', 'DashboardController', 'getPerformanceMetrics');
 
 // Handle request
 $router->dispatch();
