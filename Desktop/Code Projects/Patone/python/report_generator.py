@@ -82,7 +82,7 @@ class ReportGenerator:
 
     def generate_monthly_report(self, year: int, month: int) -> str:
         """Generate monthly operations report"""
-        filename = f"monthly_report_{year}_{month"02d"}.pdf"
+        filename = f"monthly_report_{year}_{month:02d}.pdf"
         filepath = os.path.join(self.output_dir, filename)
 
         # Get data
@@ -305,10 +305,10 @@ class ReportGenerator:
             ['Total Requests', str(stats.get('total_requests', 0))],
             ['Completed Requests', str(stats.get('completed_requests', 0))],
             ['Cancelled Requests', str(stats.get('cancelled_requests', 0))],
-            ['Average Completion Time', f"{stats.get('avg_completion_time', 0)".1f"} minutes"],
-            ['Total Revenue', f"${stats.get('total_revenue', 0)".2f"}"],
+            ['Average Completion Time', f"{stats.get('avg_completion_time', 0):.1f} minutes"],
+            ['Total Revenue', f"${stats.get('total_revenue', 0):.2f}"],
             ['Active Drivers', str(stats.get('active_drivers', 0))],
-            ['Average Response Time', f"{stats.get('avg_response_time', 0)".1f"} minutes"]
+            ['Average Response Time', f"{stats.get('avg_response_time', 0):.1f} minutes"]
         ]
 
         stats_table = Table(stats_data)
@@ -334,8 +334,8 @@ class ReportGenerator:
             service_data.append([
                 service['service_type'],
                 str(service['request_count']),
-                f"${service['total_revenue']".2f"}",
-                f"${service['avg_cost']".2f"}"
+                f"${service['total_revenue']:.2f}",
+                f"${service['avg_cost']:.2f}"
             ])
 
         service_table = Table(service_data)
@@ -361,9 +361,9 @@ class ReportGenerator:
             driver_data.append([
                 f"{driver['first_name']} {driver['last_name']}",
                 str(driver['services_completed']),
-                f"${driver['revenue_generated']".2f"}",
-                f"{driver['avg_service_time']".1f"}m",
-                f"{driver['avg_rating']".1f"}/5"
+                f"${driver['revenue_generated']:.2f}",
+                f"{driver['avg_service_time']:.1f}m",
+                f"{driver['avg_rating']:.1f}/5"
             ])
 
         driver_table = Table(driver_data)
@@ -386,8 +386,8 @@ class ReportGenerator:
 
         satisfaction_data = [
             ['Metric', 'Value'],
-            ['Average Rating', f"{satisfaction.get('avg_rating', 0)".1f"}/5"],
-            ['Satisfaction Rate', f"{satisfaction.get('satisfaction_rate', 0)".1f"}%"],
+            ['Average Rating', f"{satisfaction.get('avg_rating', 0):.1f}/5"],
+            ['Satisfaction Rate', f"{satisfaction.get('satisfaction_rate', 0):.1f}%"],
             ['Total Rated Services', str(satisfaction.get('total_rated_services', 0))]
         ]
 
