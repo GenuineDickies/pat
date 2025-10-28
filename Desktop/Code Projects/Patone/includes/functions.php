@@ -11,8 +11,26 @@ function sanitize($data) {
     }
     $data = trim($data);
     $data = stripslashes($data);
-    $data = htmlspecialchars($data);
+    $data = htmlspecialchars($data, ENT_QUOTES | ENT_HTML5, 'UTF-8');
     return $data;
+}
+
+// Escape output for HTML context (XSS protection)
+function escapeHtml($data) {
+    if (is_array($data)) {
+        return array_map('escapeHtml', $data);
+    }
+    return htmlspecialchars($data, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+}
+
+// Escape for JavaScript context
+function escapeJs($data) {
+    return json_encode($data, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
+}
+
+// Escape for URL context
+function escapeUrl($url) {
+    return filter_var($url, FILTER_SANITIZE_URL);
 }
 
 // Validate email address
@@ -241,6 +259,17 @@ function generateCSRFToken() {
         $_SESSION['csrf_token'] = generateRandomString(32);
     }
     return $_SESSION['csrf_token'];
+}
+
+// Validate CSRF token
+function validateCSRFToken($token) {
+    return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
+}
+
+// Validate password strength
+function validatePasswordStrength($password) {
+    $security = SecurityMiddleware::getInstance();
+    return $security->validatePasswordStrength($password);
 }
 
 // Truncate text with ellipsis

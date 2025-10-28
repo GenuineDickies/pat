@@ -4,33 +4,85 @@
 
 This document summarizes the security measures implemented in Patone v1.0.
 
+## 📚 Security Documentation
+
+For detailed information, please refer to:
+
+- **[Security Configuration Guide](SECURITY_CONFIGURATION.md)** - Detailed configuration instructions for all security features
+- **[Security Best Practices](SECURITY_BEST_PRACTICES.md)** - Development guidelines and secure coding practices
+- **[Deployment Security Checklist](DEPLOYMENT_SECURITY_CHECKLIST.md)** - Complete checklist for secure production deployment
+
 ## ✅ Security Features Implemented
 
 ### 1. Authentication & Authorization
-- **Password Security**: Bcrypt hashing with cost factor 10
-- **Session Management**: Secure session handling with PHP sessions
-- **Login Protection**: Failed login attempt tracking with account lockout
+- **Password Security**: Enhanced bcrypt hashing with comprehensive strength requirements
+  - Minimum 8 characters with uppercase, lowercase, number, and special character
+  - Common password detection
+  - Maximum length enforcement (DoS prevention)
+- **Session Management**: Secure session handling with timeouts and regeneration
+  - 30-minute session timeout (configurable)
+  - Session ID regeneration on login
+  - Secure cookie flags (HttpOnly, Secure, SameSite)
+- **Login Protection**: Multi-layered protection against brute force
+  - Failed login attempt tracking with account lockout (5 attempts)
+  - Rate limiting on login endpoint (5 attempts per 5 minutes)
+  - IP-based rate limiting
 - **Role-Based Access Control (RBAC)**: Four roles (Admin, Manager, Dispatcher, Driver)
 - **Permission Checks**: Granular permission system throughout the application
 
 ### 2. Input Validation & Sanitization
 - **SQL Injection Prevention**: All database queries use prepared statements
-- **XSS Protection**: All output escaped with `htmlspecialchars()`
-- **CSRF Protection**: CSRF tokens on all state-changing forms
+- **XSS Protection**: Enhanced context-aware output escaping
+  - `escapeHtml()` for HTML context
+  - `escapeJs()` for JavaScript context
+  - `escapeUrl()` for URL context
+- **CSRF Protection**: Enhanced CSRF token validation
+  - Tokens validated on all POST/PUT/DELETE requests
+  - Uses `hash_equals()` for timing-attack prevention
+  - Supports both form fields and HTTP headers
 - **Input Sanitization**: Global sanitize() function for all user inputs
-- **File Upload Validation**: Type checking, size limits, and secure file naming
+- **File Upload Validation**: Comprehensive security checks
+  - File type validation (extension + MIME type)
+  - File size limits enforcement
+  - Malicious content detection (PHP tags, scripts)
+  - Safe random file naming
+  - Upload verification (prevents local file inclusion)
 
 ### 3. Database Security
 - **Prepared Statements**: 100% coverage for all database queries
 - **Foreign Key Constraints**: Data integrity enforced at database level
 - **Password Storage**: Never stored in plain text, always bcrypt hashed
 - **Sensitive Data**: Encryption keys defined but need configuration
+- **Security Logging**: Dedicated table for security events
 
 ### 4. Application Security
-- **Security Headers**: X-Content-Type-Options, X-Frame-Options, X-XSS-Protection
+- **Security Headers**: Comprehensive HTTP security headers
+  - X-Content-Type-Options: nosniff
+  - X-Frame-Options: DENY
+  - X-XSS-Protection: 1; mode=block
+  - Referrer-Policy: strict-origin-when-cross-origin
+  - Permissions-Policy: geolocation=(), microphone=(), camera=()
+  - Content-Security-Policy (CSP) with configurable rules
+  - Strict-Transport-Security (HSTS) for HTTPS
 - **Error Handling**: Errors logged, not displayed to users in production
 - **Activity Logging**: Comprehensive audit trail for all actions
 - **API Authentication**: Session-based authentication required for all API calls
+- **Rate Limiting**: Configurable rate limits for different endpoints
+  - Login: 5 attempts per 5 minutes
+  - API: 100 requests per minute
+  - Custom limits for specific actions
+- **IP Blocking**: Support for temporary and permanent IP blocks
+
+### 5. Security Middleware
+New `SecurityMiddleware` class provides centralized security services:
+- Rate limiting with automatic cleanup
+- Password strength validation
+- File upload security validation
+- Session timeout management
+- Session ID regeneration
+- Security event logging
+- IP blocking capabilities
+- XSS protection helpers
 
 ## ⚠️ Security Considerations for Production
 

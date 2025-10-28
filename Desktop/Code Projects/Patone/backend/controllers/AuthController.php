@@ -32,6 +32,12 @@ class AuthController extends Controller {
             $this->redirect(SITE_URL . 'dashboard');
         }
 
+        // Check rate limiting before processing
+        $security = SecurityMiddleware::getInstance();
+        if (!$security->checkRateLimit('login', RATE_LIMIT_LOGIN_ATTEMPTS, RATE_LIMIT_LOGIN_WINDOW)) {
+            $this->redirectWithError(SITE_URL . 'login', 'Too many login attempts. Please try again later.');
+        }
+
         // Validate CSRF token
         $this->validateCSRF();
 
@@ -77,7 +83,9 @@ class AuthController extends Controller {
                 $this->redirectWithError(SITE_URL . 'login', 'Invalid email or password');
             }
 
-            // Login successful
+            // Login successful - regenerate session ID to prevent session fixation
+            $security->regenerateSession();
+            
             $this->loginUser($user, isset($postData['remember']));
 
             // Clear failed login attempts

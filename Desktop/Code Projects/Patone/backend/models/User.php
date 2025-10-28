@@ -68,6 +68,13 @@ class User extends Model {
             throw new Exception("Email already exists");
         }
 
+        // Validate password strength
+        $security = SecurityMiddleware::getInstance();
+        $passwordValidation = $security->validatePasswordStrength($data['password']);
+        if (!$passwordValidation['valid']) {
+            throw new Exception("Password requirements not met: " . implode(', ', $passwordValidation['errors']));
+        }
+
         // Hash password
         $hashedPassword = password_hash($data['password'], PASSWORD_BCRYPT);
 
@@ -125,6 +132,13 @@ class User extends Model {
 
     // Update password
     public function updatePassword($id, $newPassword) {
+        // Validate password strength
+        $security = SecurityMiddleware::getInstance();
+        $passwordValidation = $security->validatePasswordStrength($newPassword);
+        if (!$passwordValidation['valid']) {
+            throw new Exception("Password requirements not met: " . implode(', ', $passwordValidation['errors']));
+        }
+
         $hashedPassword = password_hash($newPassword, PASSWORD_BCRYPT);
 
         return $this->db->update(
