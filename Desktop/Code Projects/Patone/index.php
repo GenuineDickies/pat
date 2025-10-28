@@ -40,6 +40,16 @@ $router->addRoute('GET', '/reports/daily', 'ReportController', 'daily');
 $router->addRoute('GET', '/reports/monthly', 'ReportController', 'monthly');
 $router->addRoute('GET', '/settings', 'SettingController', 'index');
 $router->addRoute('POST', '/settings', 'SettingController', 'update');
+$router->addRoute('POST', '/settings/user/add', 'SettingController', 'addUser');
+$router->addRoute('POST', '/settings/user/edit', 'SettingController', 'editUser');
+$router->addRoute('GET', '/settings/user/delete/{id}', 'SettingController', 'deleteUser');
+$router->addRoute('POST', '/settings/user/password', 'SettingController', 'changePassword');
+$router->addRoute('POST', '/settings/role/permissions', 'SettingController', 'updateRolePermissions');
+$router->addRoute('POST', '/settings/service/add', 'SettingController', 'addServiceType');
+$router->addRoute('POST', '/settings/service/edit', 'SettingController', 'editServiceType');
+$router->addRoute('GET', '/settings/service/delete/{id}', 'SettingController', 'deleteServiceType');
+$router->addRoute('GET', '/settings/export', 'SettingController', 'exportSettings');
+$router->addRoute('POST', '/settings/import', 'SettingController', 'importSettings');
 
 // Dispatch routes
 $router->addRoute('GET', '/dispatch', 'DispatchController', 'index');
