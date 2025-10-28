@@ -20,8 +20,8 @@ info:
 servers:
   - url: http://localhost:8000/api
     description: Development server
-  - url: https://api.example.com/api
-    description: Production server
+  - url: https://your-domain.com/api
+    description: Production server (update before deployment)
 
 tags:
   - name: Authentication
@@ -96,6 +96,42 @@ components:
         created_at:
           type: string
           format: date-time
+          
+    CustomerUpdate:
+      type: object
+      properties:
+        first_name:
+          type: string
+          example: "John"
+        last_name:
+          type: string
+          example: "Doe"
+        email:
+          type: string
+          format: email
+          example: "john@example.com"
+        phone:
+          type: string
+          example: "5551234567"
+        address:
+          type: string
+          example: "123 Main St"
+        city:
+          type: string
+          example: "New York"
+        state:
+          type: string
+          example: "NY"
+        zip:
+          type: string
+          example: "10001"
+        status:
+          type: string
+          enum: [active, inactive]
+          example: "active"
+        is_vip:
+          type: boolean
+          example: false
           
     ServiceRequest:
       type: object
@@ -354,7 +390,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Customer'
+              $ref: '#/components/schemas/CustomerUpdate'
       responses:
         '200':
           description: Customer updated successfully
