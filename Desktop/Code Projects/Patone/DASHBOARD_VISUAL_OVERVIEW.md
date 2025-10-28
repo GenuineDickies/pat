@@ -17,7 +17,7 @@
 ┌────────────────────────────────────────────────────────────────────────┐
 │ Performance Metrics                                                     │
 ├──────────────────┬──────────────────┬──────────────────┬──────────────┤
-│ Avg Response Time│ Completion Rate  │Customer Satisfac │  Peak Hours  │
+│ Avg Response Time│ Completion Rate  │Customer Satisfac.│  Peak Hours  │
 │    12.5 min      │      87.5%       │    4.5/5.0       │   2-3 PM     │
 └──────────────────┴──────────────────┴──────────────────┴──────────────┘
 
