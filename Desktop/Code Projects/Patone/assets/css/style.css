@@ -674,6 +674,163 @@ button {
     }
 }
 
+/* Mobile-Specific Layout Improvements */
+@media (max-width: 767.98px) {
+    /* Page headers - stack buttons vertically */
+    .d-flex.justify-content-between {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .d-flex.justify-content-between > * {
+        width: 100%;
+    }
+
+    /* Button groups - stack vertically on mobile */
+    .btn-group {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .btn-group .btn {
+        border-radius: var(--border-radius) !important;
+        margin-bottom: 0.5rem;
+        width: 100%;
+    }
+
+    .btn-group .btn:last-child {
+        margin-bottom: 0;
+    }
+
+    /* Filter cards - full width inputs */
+    .card-body .row.g-3 {
+        gap: 0.75rem;
+    }
+
+    .card-body .row.g-3 > [class*='col-'] {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    /* Action button groups in card headers */
+    .card-header .d-flex {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .card-header .gap-2 {
+        width: 100%;
+    }
+
+    .card-header .btn-sm {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Improve form layout on mobile */
+    .form-label {
+        font-size: 0.875rem;
+        margin-bottom: 0.375rem;
+    }
+
+    .form-control,
+    .form-select {
+        font-size: 16px; /* Prevent zoom on iOS */
+    }
+
+    /* Table improvements for mobile */
+    .table-responsive {
+        border: none;
+        margin-bottom: 1rem;
+    }
+
+    .table thead {
+        font-size: 0.75rem;
+    }
+
+    .table tbody {
+        font-size: 0.875rem;
+    }
+
+    /* Hide less important table columns on mobile */
+    .table .d-none-mobile {
+        display: none !important;
+    }
+
+    /* Action buttons in tables */
+    .table .btn-group-sm {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .table .btn-group-sm .btn {
+        width: 100%;
+        margin-bottom: 0.25rem;
+    }
+}
+
+/* Tablet Optimizations */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .btn-group {
+        flex-wrap: wrap;
+    }
+
+    .btn-group .btn {
+        flex: 1 1 auto;
+        min-width: 120px;
+    }
+
+    /* Adjust form columns for tablets */
+    .row.g-3 > .col-md-1,
+    .row.g-3 > .col-md-2 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}
+
+/* Landscape Phone Optimizations */
+@media (max-width: 767.98px) and (orientation: landscape) {
+    .stats-card {
+        margin-bottom: 0.75rem;
+    }
+
+    .stats-card .card-body {
+        padding: 0.75rem;
+    }
+
+    .stats-card h2 {
+        font-size: 1.25rem;
+    }
+
+    .page-content {
+        padding: 0.75rem;
+    }
+}
+
+/* Very Small Devices (< 360px) */
+@media (max-width: 359.98px) {
+    body {
+        font-size: 13px;
+    }
+
+    .page-title {
+        font-size: 1.125rem;
+    }
+
+    .stats-card h2 {
+        font-size: 1.25rem;
+    }
+
+    .btn {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+    }
+
+    .table {
+        font-size: 0.75rem;
+    }
+}
+
 /* Loading States */
 .loading {
     position: relative;
