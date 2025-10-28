@@ -1,50 +1,179 @@
 # Developer Setup Guide
 
-This page explains how to set up a local development environment for the Patone project.
+This guide explains how to set up a local development environment for the Patone Roadside Assistance platform.
 
-Prerequisites
+## Prerequisites
 
-- PHP 8.0+ (check `config.php` and composer requirements)
-- Composer
-- MySQL or MariaDB
-- Node.js + npm (for frontend assets and optional `redoc-cli`)
-- Git
+### Required Software
+- **PHP 7.4+** (project requirement from `composer.json`)
+- **Composer** for PHP dependency management
+- **MySQL 5.7+ or MariaDB 10.3+** for the database
+- **Node.js 16+ and npm** for JavaScript testing and tools
+- **Git** for version control
 
-Quickstart
+### Required PHP Extensions
+Ensure these PHP extensions are installed:
+```bash
+php -m | grep -E "(pdo|pdo_mysql|mysqli|mbstring|openssl|json|curl|zip)"
+```
 
-1. Clone the repository
+## Step-by-Step Setup
 
-   git clone https://github.com/GenuineDickies/pat.git
+### 1. Clone the Repository
+```bash
+git clone https://github.com/GenuineDickies/pat.git
+cd pat/Desktop/Code\ Projects/Patone
+```
 
-2. Install PHP dependencies
+### 2. Install PHP Dependencies
+```bash
+composer install
+```
 
-   cd pat
-   composer install
+### 3. Database Setup
 
-3. Copy configuration
+#### Create the Database
+```bash
+# Connect to MySQL
+mysql -u root -p
 
-   cp config.php.example config.php
-   # edit `config.php` to set DB credentials and environment variables
+# Create the database
+CREATE DATABASE roadside_assistance CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE roadside_assistance_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+exit
+```
 
-4. Create the database and import schema
+#### Import the Schema
+```bash
+# Import main database schema
+mysql -u root -p roadside_assistance < database/schema.sql
 
-   mysql -u root -p < database/schema.sql
+# Import test database schema
+mysql -u root -p roadside_assistance_test < database/schema.sql
+```
 
-5. Install frontend dependencies and build assets (if applicable)
+### 4. Configuration
 
-   npm install
-   npm run build
+The `config.php` file contains the main configuration. Key settings to verify:
 
-6. Run tests
+```php
+// Database Configuration (lines 23-26 in config.php)
+define('DB_HOST', 'localhost');
+define('DB_USER', 'root');          // Update with your MySQL user
+define('DB_PASS', '');              // Update with your MySQL password
+define('DB_NAME', 'roadside_assistance');
+```
 
-   vendor/bin/phpunit --configuration phpunit.xml
+**Security Note:** Change the `ENCRYPTION_KEY` in `config.php` before production use.
 
-Static analysis and docs
+### 5. Install Node.js Dependencies (for testing)
+```bash
+npm install
+```
 
-- PHPStan: `vendor/bin/phpstan analyse src --level=max` (adjust path and level as needed)
-- Generate PHPDoc: use `phpDocumentor` or `phpdoc` to generate HTML docs
+### 6. Verify Setup - Run Tests
 
-Notes & tips
+#### PHP Tests (PHPUnit)
+```bash
+# Run all tests
+composer test
+# Or directly with PHPUnit
+vendor/bin/phpunit
 
-- Use Docker for repeatable environments; see `deployment-guide.md` for an example Docker Compose snippet.
-- If you hit permission or missing-extension issues, check `php -m` and enable needed extensions (pdo_mysql, openssl, mbstring, etc.).
+# Run specific test suites
+composer test-unit        # Unit tests only
+composer test-integration # Integration tests only
+composer test-security    # Security tests only
+```
+
+#### JavaScript Tests (Jest)
+```bash
+npm test                  # Run once
+npm run test:watch       # Watch mode
+npm run test:coverage    # With coverage report
+```
+
+#### End-to-End Tests (Playwright)
+```bash
+npm run test:e2e         # Headless E2E tests
+npm run test:e2e:ui      # Interactive E2E tests
+```
+
+## Development Workflow
+
+### Running the Application Locally
+```bash
+# Start PHP development server
+php -S localhost:8000 -t . index.php
+
+# Application will be available at http://localhost:8000
+```
+
+### File Structure Overview
+- `backend/` - PHP controllers, models (PSR-4 autoloaded as `Patone\` namespace)
+- `frontend/` - Frontend pages and JavaScript
+- `assets/` - Compiled CSS, JS, images
+- `database/` - Schema, migrations, sample data
+- `tests/` - All test files (Unit, Integration, Security, E2E, JavaScript)
+- `logs/` - Application logs
+- `uploads/` - File uploads directory
+
+## Development Tools
+
+### Code Quality & Documentation
+```bash
+# Install PHPStan for static analysis (recommended)
+composer require --dev phpstan/phpstan
+
+# Run static analysis
+vendor/bin/phpstan analyse backend --level=7
+
+# Install phpDocumentor for API docs
+composer require --dev phpdocumentor/phpdocumentor
+
+# Generate PHP API documentation
+vendor/bin/phpdoc -d backend -t docs/phpdoc
+```
+
+### Debugging & Logs
+- Application logs: `logs/` directory
+- PHP errors: Check `error_log` in project root or PHP-FPM logs
+- Debug mode: Already enabled in `config.php` (set `display_errors` to 0 for production)
+
+## Common Issues & Solutions
+
+### Database Connection Errors
+```bash
+# Test MySQL connection
+mysql -u root -p -e "SELECT VERSION();"
+
+# Check if database exists
+mysql -u root -p -e "SHOW DATABASES;" | grep roadside
+```
+
+### Permission Issues
+```bash
+# Ensure proper permissions for logs and uploads
+chmod 755 logs/ uploads/
+chmod 644 config.php
+```
+
+### Missing PHP Extensions
+```bash
+# Ubuntu/Debian
+sudo apt-get install php-pdo php-mysql php-mbstring php-curl php-zip php-json
+
+# macOS with Homebrew
+brew install php
+```
+
+## Docker Alternative (Optional)
+
+For a containerized development environment, see the Docker Compose example in `deployment-guide.md`.
+
+## Next Steps
+
+1. **Explore the API**: Use the OpenAPI spec at `documentation/docs/openapi.yaml`
+2. **Run all tests** to ensure everything works: `composer test && npm test`
+3. **Check code architecture**: Read `documentation/docs/code-architecture.md`
+4. **Review security**: See `SECURITY.md` and run security tests
