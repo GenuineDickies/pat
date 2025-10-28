@@ -41,11 +41,19 @@ $router->addRoute('GET', '/reports/monthly', 'ReportController', 'monthly');
 $router->addRoute('GET', '/settings', 'SettingController', 'index');
 $router->addRoute('POST', '/settings', 'SettingController', 'update');
 
+// Request management routes
+$router->addRoute('POST', '/requests/complete/{id}', 'RequestController', 'complete');
+$router->addRoute('POST', '/requests/cancel/{id}', 'RequestController', 'cancel');
+$router->addRoute('POST', '/requests/auto-dispatch', 'RequestController', 'autoDispatch');
+
 // API routes
 $router->addRoute('GET', '/api/customers', 'ApiController', 'getCustomers');
 $router->addRoute('GET', '/api/requests', 'ApiController', 'getRequests');
 $router->addRoute('GET', '/api/drivers', 'ApiController', 'getDrivers');
 $router->addRoute('GET', '/api/dashboard-stats', 'ApiController', 'getDashboardStats');
+$router->addRoute('POST', '/api/requests/{id}/assign-driver', 'RequestController', 'assignDriver');
+$router->addRoute('POST', '/api/requests/{id}/status', 'RequestController', 'updateStatus');
+$router->addRoute('POST', '/api/requests/{id}/rating', 'RequestController', 'addRating');
 
 // Handle request
 $router->dispatch();
