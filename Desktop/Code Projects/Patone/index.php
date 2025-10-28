@@ -67,10 +67,36 @@ $router->addRoute('POST', '/dispatch/handleEmergency', 'DispatchController', 'ha
 $router->addRoute('GET', '/dispatch/history', 'DispatchController', 'history');
 $router->addRoute('GET', '/dispatch/queueStats', 'DispatchController', 'queueStats');
 
-// API routes
+// API routes - Authentication
+$router->addRoute('POST', '/api/login', 'ApiController', 'login');
+$router->addRoute('POST', '/api/logout', 'ApiController', 'logout');
+$router->addRoute('POST', '/api/refresh', 'ApiController', 'refresh');
+
+// API routes - Customers
 $router->addRoute('GET', '/api/customers', 'ApiController', 'getCustomers');
+$router->addRoute('POST', '/api/customers', 'ApiController', 'createCustomer');
+$router->addRoute('GET', '/api/customers/{id}', 'ApiController', 'getCustomer');
+$router->addRoute('PUT', '/api/customers/{id}', 'ApiController', 'updateCustomer');
+$router->addRoute('DELETE', '/api/customers/{id}', 'ApiController', 'deleteCustomer');
+
+// API routes - Service Requests
 $router->addRoute('GET', '/api/requests', 'ApiController', 'getRequests');
+$router->addRoute('POST', '/api/requests', 'ApiController', 'createRequest');
+$router->addRoute('GET', '/api/requests/{id}', 'ApiController', 'getRequest');
+$router->addRoute('PUT', '/api/requests/{id}', 'ApiController', 'updateRequest');
+$router->addRoute('DELETE', '/api/requests/{id}', 'ApiController', 'deleteRequest');
+
+// API routes - Drivers
 $router->addRoute('GET', '/api/drivers', 'ApiController', 'getDrivers');
+$router->addRoute('GET', '/api/drivers/{id}', 'ApiController', 'getDriver');
+$router->addRoute('PUT', '/api/drivers/{id}', 'ApiController', 'updateDriver');
+
+// API routes - Reports
+$router->addRoute('GET', '/api/reports/daily', 'ApiController', 'getDailyReport');
+$router->addRoute('GET', '/api/reports/monthly', 'ApiController', 'getMonthlyReport');
+$router->addRoute('GET', '/api/reports/custom', 'ApiController', 'getCustomReport');
+
+// API routes - Other
 $router->addRoute('GET', '/api/dashboard-stats', 'ApiController', 'getDashboardStats');
 $router->addRoute('POST', '/api/requests/{id}/assign-driver', 'RequestController', 'assignDriver');
 $router->addRoute('POST', '/api/requests/{id}/status', 'RequestController', 'updateStatus');
