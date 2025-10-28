@@ -25,6 +25,11 @@ $router->addRoute('POST', '/customers/add', 'CustomerController', 'doAdd');
 $router->addRoute('GET', '/customers/edit/{id}', 'CustomerController', 'edit');
 $router->addRoute('POST', '/customers/edit/{id}', 'CustomerController', 'doEdit');
 $router->addRoute('GET', '/customers/delete/{id}', 'CustomerController', 'delete');
+$router->addRoute('GET', '/customers/view/{id}', 'CustomerController', 'view');
+$router->addRoute('GET', '/customers/export', 'CustomerController', 'export');
+$router->addRoute('POST', '/customers/import', 'CustomerController', 'import');
+$router->addRoute('GET', '/customers/tags', 'CustomerController', 'getTags');
+$router->addRoute('GET', '/customers/{id}', 'CustomerController', 'view');
 $router->addRoute('GET', '/requests', 'RequestController', 'index');
 $router->addRoute('GET', '/requests/add', 'RequestController', 'add');
 $router->addRoute('POST', '/requests/add', 'RequestController', 'doAdd');
@@ -40,6 +45,27 @@ $router->addRoute('GET', '/reports/daily', 'ReportController', 'daily');
 $router->addRoute('GET', '/reports/monthly', 'ReportController', 'monthly');
 $router->addRoute('GET', '/settings', 'SettingController', 'index');
 $router->addRoute('POST', '/settings', 'SettingController', 'update');
+$router->addRoute('POST', '/settings/user/add', 'SettingController', 'addUser');
+$router->addRoute('POST', '/settings/user/edit', 'SettingController', 'editUser');
+$router->addRoute('GET', '/settings/user/delete/{id}', 'SettingController', 'deleteUser');
+$router->addRoute('POST', '/settings/user/password', 'SettingController', 'changePassword');
+$router->addRoute('POST', '/settings/role/permissions', 'SettingController', 'updateRolePermissions');
+$router->addRoute('POST', '/settings/service/add', 'SettingController', 'addServiceType');
+$router->addRoute('POST', '/settings/service/edit', 'SettingController', 'editServiceType');
+$router->addRoute('GET', '/settings/service/delete/{id}', 'SettingController', 'deleteServiceType');
+$router->addRoute('GET', '/settings/export', 'SettingController', 'exportSettings');
+$router->addRoute('POST', '/settings/import', 'SettingController', 'importSettings');
+
+// Dispatch routes
+$router->addRoute('GET', '/dispatch', 'DispatchController', 'index');
+$router->addRoute('POST', '/dispatch/autoDispatch', 'DispatchController', 'autoDispatch');
+$router->addRoute('POST', '/dispatch/manualDispatch', 'DispatchController', 'manualDispatch');
+$router->addRoute('GET', '/dispatch/findDriver/{id}', 'DispatchController', 'findDriver');
+$router->addRoute('GET', '/dispatch/getDriverOptions/{id}', 'DispatchController', 'getDriverOptions');
+$router->addRoute('POST', '/dispatch/enqueue', 'DispatchController', 'enqueue');
+$router->addRoute('POST', '/dispatch/handleEmergency', 'DispatchController', 'handleEmergency');
+$router->addRoute('GET', '/dispatch/history', 'DispatchController', 'history');
+$router->addRoute('GET', '/dispatch/queueStats', 'DispatchController', 'queueStats');
 
 // API routes - Authentication
 $router->addRoute('POST', '/api/login', 'ApiController', 'login');
@@ -72,10 +98,9 @@ $router->addRoute('GET', '/api/reports/custom', 'ApiController', 'getCustomRepor
 
 // API routes - Other
 $router->addRoute('GET', '/api/dashboard-stats', 'ApiController', 'getDashboardStats');
-$router->addRoute('GET', '/api/service-types', 'ApiController', 'getServiceTypes');
-$router->addRoute('GET', '/api/drivers/available', 'ApiController', 'getAvailableDrivers');
-$router->addRoute('POST', '/api/drivers/{id}/location', 'ApiController', 'updateDriverLocation');
-$router->addRoute('POST', '/api/requests/{id}/status', 'ApiController', 'updateRequestStatus');
+$router->addRoute('POST', '/api/requests/{id}/assign-driver', 'RequestController', 'assignDriver');
+$router->addRoute('POST', '/api/requests/{id}/status', 'RequestController', 'updateStatus');
+$router->addRoute('POST', '/api/requests/{id}/rating', 'RequestController', 'addRating');
 
 // Handle request
 $router->dispatch();

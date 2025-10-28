@@ -216,25 +216,33 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form id="importForm" enctype="multipart/form-data">
+                <form id="importForm" method="POST" action="<?php echo SITE_URL; ?>customers/import" enctype="multipart/form-data">
+                    <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
                     <div class="mb-3">
-                        <label for="importFile" class="form-label">Select CSV File</label>
-                        <input type="file" class="form-control" id="importFile" name="importFile" accept=".csv" required>
-                        <div class="form-text">Upload a CSV file with customer data</div>
+                        <label for="import_file" class="form-label">Select CSV File</label>
+                        <input type="file" class="form-control" id="import_file" name="import_file" accept=".csv" required>
+                        <div class="form-text">
+                            Upload a CSV file with customer data. Required columns: 
+                            First Name, Last Name, Email, Phone, Address, City, State, ZIP
+                        </div>
                     </div>
                     <div class="mb-3">
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="skipDuplicates" name="skipDuplicates" checked>
-                            <label class="form-check-label" for="skipDuplicates">
-                                Skip duplicate records
+                            <input class="form-check-input" type="checkbox" id="skip_duplicates" name="skip_duplicates" value="1" checked>
+                            <label class="form-check-label" for="skip_duplicates">
+                                Skip duplicate records (by email)
                             </label>
                         </div>
+                    </div>
+                    <div class="alert alert-info">
+                        <strong>CSV Format Example:</strong><br>
+                        <small>First Name, Last Name, Email, Phone, Address, City, State, ZIP, VIP, Status, Notes</small>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="importCustomers()">Import</button>
+                <button type="button" class="btn btn-primary" onclick="document.getElementById('importForm').submit()">Import</button>
             </div>
         </div>
     </div>
@@ -290,11 +298,22 @@ function refreshTable() {
 
 function exportCustomers() {
     const selectedIds = getSelectedCustomerIds();
+    const search = $('#searchFilter').val();
+    const status = $('#statusFilter').val();
+    const state = $('#stateFilter').val();
+    
+    let url = '<?php echo SITE_URL; ?>customers/export?';
+    const params = [];
+    
     if (selectedIds.length > 0) {
-        window.location.href = `<?php echo SITE_URL; ?>api/customers/export?ids=${selectedIds.join(',')}`;
+        params.push(`ids=${selectedIds.join(',')}`);
     } else {
-        window.location.href = '<?php echo SITE_URL; ?>api/customers/export';
+        if (search) params.push(`search=${encodeURIComponent(search)}`);
+        if (status) params.push(`status=${encodeURIComponent(status)}`);
+        if (state) params.push(`state=${encodeURIComponent(state)}`);
     }
+    
+    window.location.href = url + params.join('&');
 }
 
 function getSelectedCustomerIds() {
@@ -314,9 +333,19 @@ function bulkDelete() {
     }
 }
 
+function bulkExport() {
+    const selectedIds = getSelectedCustomerIds();
+    if (selectedIds.length === 0) {
+        alert('Please select customers to export');
+        return;
+    }
+    
+    window.location.href = `<?php echo SITE_URL; ?>customers/export?ids=${selectedIds.join(',')}`;
+}
+
 function viewServiceHistory(customerId) {
-    // Implement service history modal
-    console.log('View service history for customer:', customerId);
+    // Redirect to customer detail page
+    window.location.href = `<?php echo SITE_URL; ?>customers/view/${customerId}`;
 }
 
 function deleteCustomer(customerId) {
@@ -325,21 +354,31 @@ function deleteCustomer(customerId) {
     }
 }
 
-function importCustomers() {
-    const formData = new FormData(document.getElementById('importForm'));
-
-    // Implement import functionality
-    console.log('Importing customers...');
-    $('#importModal').modal('hide');
-}
-
 function sendSMS(customerId) {
     // Implement SMS functionality
-    console.log('Send SMS to customer:', customerId);
+    alert('SMS functionality coming soon');
 }
 
 function sendEmail(customerId) {
     // Implement email functionality
-    console.log('Send email to customer:', customerId);
+    alert('Email functionality coming soon');
+}
+
+function sendBulkSMS() {
+    const selectedIds = getSelectedCustomerIds();
+    if (selectedIds.length === 0) {
+        alert('Please select customers to send SMS');
+        return;
+    }
+    alert('Bulk SMS functionality coming soon');
+}
+
+function sendBulkEmail() {
+    const selectedIds = getSelectedCustomerIds();
+    if (selectedIds.length === 0) {
+        alert('Please select customers to send email');
+        return;
+    }
+    alert('Bulk email functionality coming soon');
 }
 </script>
