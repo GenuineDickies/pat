@@ -124,6 +124,16 @@
     <!-- Login Layout -->
     <div class="login-container">
         <div class="login-wrapper">
+            <?php
+            // Display flash messages for login page
+            $flashMessage = getFlashMessage();
+            if ($flashMessage):
+            ?>
+            <div class="alert alert-<?php echo $flashMessage['type'] == 'error' ? 'danger' : $flashMessage['type']; ?> alert-dismissible fade show" role="alert" style="margin-bottom: 20px;">
+                <?php echo $flashMessage['message']; ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <?php endif; ?>
             <?php echo $content ?? ''; ?>
         </div>
     </div>

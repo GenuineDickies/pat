@@ -17,7 +17,7 @@ class DashboardController extends Controller {
             $stats = $this->getDashboardStats();
 
             // Get recent service requests
-            $recentRequests = $this->getRecentRequests(10);
+            $recentRequests = $this->fetchRecentRequests(10);
 
             // Get driver statistics
             $driverStats = $this->getDriverStats();
@@ -94,7 +94,7 @@ class DashboardController extends Controller {
     }
 
     // Get recent service requests
-    private function getRecentRequests($limit = 10) {
+    private function fetchRecentRequests($limit = 10) {
         try {
             return $this->db->getRows(
                 "SELECT
@@ -154,7 +154,7 @@ class DashboardController extends Controller {
         $this->requireLogin();
 
         try {
-            $requests = $this->getRecentRequests(5);
+            $requests = $this->fetchRecentRequests(5);
             $this->jsonSuccess($requests);
         } catch (Exception $e) {
             $this->jsonError('Error retrieving recent requests');

@@ -11,6 +11,7 @@
     <?php endif; ?>
 
     <form method="POST" action="<?php echo SITE_URL; ?>login">
+        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
         <div class="mb-3">
             <label for="email" class="form-label">Email Address</label>
             <div class="input-group">
