@@ -28,8 +28,16 @@ jobs:
         extensions: pdo, pdo_mysql, mbstring, curl, zip, json
     
     - name: Install Composer dependencies
-      working-directory: ./Desktop/Code\ Projects/Patone
+      working-directory: "./Desktop/Code Projects/Patone"
       run: composer install --prefer-dist --no-progress
+    
+    - name: Setup test database
+      working-directory: "./Desktop/Code Projects/Patone"
+      run: |
+        mysql -h 127.0.0.1 -u root -proot -e "CREATE DATABASE IF NOT EXISTS roadside_assistance_test;"
+        mysql -h 127.0.0.1 -u root -proot roadside_assistance_test < database/schema.sql
+      env:
+        MYSQL_PWD: root
     
     - name: Setup Node.js
       uses: actions/setup-node@v3
@@ -37,12 +45,12 @@ jobs:
         node-version: '18'
     
     - name: Install Node dependencies
-      working-directory: ./Desktop/Code\ Projects/Patone
+      working-directory: "./Desktop/Code Projects/Patone"
       run: npm install
     
     - name: Run PHP tests
-      working-directory: ./Desktop/Code\ Projects/Patone
-      run: composer test
+      working-directory: "./Desktop/Code Projects/Patone"
+      run: vendor/bin/phpunit --configuration phpunit.xml
       env:
         DB_HOST: 127.0.0.1
         DB_PORT: 3306
