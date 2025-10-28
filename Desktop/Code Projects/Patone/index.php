@@ -57,6 +57,9 @@ $router->addRoute('GET', '/api/customers', 'ApiController', 'getCustomers');
 $router->addRoute('GET', '/api/requests', 'ApiController', 'getRequests');
 $router->addRoute('GET', '/api/drivers', 'ApiController', 'getDrivers');
 $router->addRoute('GET', '/api/dashboard-stats', 'ApiController', 'getDashboardStats');
+$router->addRoute('POST', '/api/requests/{id}/assign-driver', 'RequestController', 'assignDriver');
+$router->addRoute('POST', '/api/requests/{id}/status', 'RequestController', 'updateStatus');
+$router->addRoute('POST', '/api/requests/{id}/rating', 'RequestController', 'addRating');
 
 // Handle request
 $router->dispatch();
