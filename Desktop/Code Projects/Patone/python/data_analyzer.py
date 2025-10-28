@@ -543,14 +543,25 @@ class DataAnalyzer:
             'high_value_threshold': float(df['total_spent'].quantile(0.75))
         }
 
-    def _identify_at_risk_customers(self, df: pd.DataFrame) -> List[Dict]:
-        """Identify customers at risk of churning"""
+    def _identify_at_risk_customers(self, df: pd.DataFrame, reference_date=None) -> List[Dict]:
+        """Identify customers at risk of churning
+        
+        Args:
+            df: DataFrame with customer data
+            reference_date: Optional reference date for calculations (defaults to now)
+        """
         if df.empty:
             return []
         
+        # Use provided reference date or current timestamp
+        if reference_date is None:
+            reference_date = pd.Timestamp.now()
+        else:
+            reference_date = pd.Timestamp(reference_date)
+        
         # Customers who haven't used service in 90+ days
         df['last_service_date'] = pd.to_datetime(df['last_service_date'])
-        df['days_since_service'] = (pd.Timestamp.now() - df['last_service_date']).dt.days
+        df['days_since_service'] = (reference_date - df['last_service_date']).dt.days
         
         at_risk = df[df['days_since_service'] > 90].copy()
         at_risk = at_risk.sort_values('total_spent', ascending=False)

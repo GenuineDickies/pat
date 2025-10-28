@@ -140,14 +140,43 @@ class ReportingTest {
         if (empty($missingScripts)) {
             $this->pass("All Python analytics scripts exist (" . count($scripts) . " scripts)");
             
-            // Test Python syntax
-            $reportGenerator = $basePath . 'python/report_generator.py';
-            $syntaxCheck = shell_exec("python3 -m py_compile " . escapeshellarg($reportGenerator) . " 2>&1");
+            // Test Python syntax - using realpath for security
+            $reportGenerator = realpath($basePath . 'python/report_generator.py');
             
-            if (empty($syntaxCheck) || strpos($syntaxCheck, 'SyntaxError') === false) {
-                $this->pass("Python report_generator.py syntax is valid");
+            // Verify file is within expected directory
+            if ($reportGenerator && strpos($reportGenerator, realpath($basePath . 'python')) === 0) {
+                $descriptorspec = [
+                    0 => ['pipe', 'r'],
+                    1 => ['pipe', 'w'],
+                    2 => ['pipe', 'w']
+                ];
+                
+                $process = proc_open(
+                    ['python3', '-m', 'py_compile', $reportGenerator],
+                    $descriptorspec,
+                    $pipes
+                );
+                
+                if (is_resource($process)) {
+                    $output = stream_get_contents($pipes[1]);
+                    $errors = stream_get_contents($pipes[2]);
+                    
+                    fclose($pipes[0]);
+                    fclose($pipes[1]);
+                    fclose($pipes[2]);
+                    
+                    $returnCode = proc_close($process);
+                    
+                    if ($returnCode === 0 && strpos($errors, 'SyntaxError') === false) {
+                        $this->pass("Python report_generator.py syntax is valid");
+                    } else {
+                        $this->fail("Python report_generator.py has syntax errors");
+                    }
+                } else {
+                    $this->fail("Could not execute Python syntax check");
+                }
             } else {
-                $this->fail("Python report_generator.py has syntax errors");
+                $this->fail("Invalid Python script path");
             }
         } else {
             $this->fail("Missing Python scripts: " . implode(', ', $missingScripts));

@@ -8,6 +8,7 @@ import os
 import sys
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional
+import calendar
 
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -414,7 +415,6 @@ class ReportGenerator:
         cursor = conn.cursor(dictionary=True)
         
         start_date = f"{year}-{month:02d}-01"
-        import calendar
         last_day = calendar.monthrange(year, month)[1]
         end_date = f"{year}-{month:02d}-{last_day}"
         
@@ -437,7 +437,6 @@ class ReportGenerator:
         cursor = conn.cursor(dictionary=True)
         
         start_date = f"{year}-{month:02d}-01"
-        import calendar
         last_day = calendar.monthrange(year, month)[1]
         end_date = f"{year}-{month:02d}-{last_day}"
         
@@ -460,7 +459,6 @@ class ReportGenerator:
         cursor = conn.cursor(dictionary=True)
         
         start_date = f"{year}-{month:02d}-01"
-        import calendar
         last_day = calendar.monthrange(year, month)[1]
         end_date = f"{year}-{month:02d}-{last_day}"
         
@@ -486,7 +484,6 @@ class ReportGenerator:
         cursor = conn.cursor(dictionary=True)
         
         start_date = f"{year}-{month:02d}-01"
-        import calendar
         last_day = calendar.monthrange(year, month)[1]
         end_date = f"{year}-{month:02d}-{last_day}"
         
