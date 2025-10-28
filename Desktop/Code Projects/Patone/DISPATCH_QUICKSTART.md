@@ -55,12 +55,13 @@ All tests passed successfully!
    - Go to Dispatch Dashboard (`/dispatch`)
    - Or use API:
    ```javascript
+   const formData = new FormData();
+   formData.append('request_id', YOUR_REQUEST_ID);
+   formData.append('priority', 'normal');
+   
    fetch('/dispatch/enqueue', {
      method: 'POST',
-     body: new FormData([
-       ['request_id', YOUR_REQUEST_ID],
-       ['priority', 'normal']
-     ])
+     body: formData
    });
    ```
 
@@ -111,7 +112,9 @@ POST /dispatch/autoDispatch
 ### Manual Dispatch
 ```bash
 POST /dispatch/manualDispatch
-Content: request_id=123&driver_id=45
+Content-Type: application/x-www-form-urlencoded
+
+request_id=123&driver_id=45
 ```
 
 ### Find Best Driver
