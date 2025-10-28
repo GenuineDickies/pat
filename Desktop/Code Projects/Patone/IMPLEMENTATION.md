@@ -364,6 +364,32 @@ Comprehensive view of driver performance and status:
 - `max_workload` - Maximum concurrent requests
 - `availability_notes` - Notes about driver availability
 
+### ✅ Automated Dispatch System (v1.1 - IMPLEMENTED)
+Complete automated dispatch system with intelligent driver selection:
+
+**Components**:
+- `DispatchQueue` model - Priority-based request queuing
+- `DispatchAlgorithm` model - Intelligent driver selection with multi-factor scoring
+- `DispatchController` - Dispatch operations and API endpoints
+- Dispatch dashboard - Real-time monitoring and manual override interface
+
+**Features**:
+- Multi-factor driver scoring (proximity, workload, rating, availability)
+- Priority-based queue management (emergency, high, normal, low)
+- Automatic and manual dispatch modes
+- Emergency request handling with immediate dispatch
+- Dispatch history tracking
+- Real-time queue statistics
+- Configurable scoring weights
+
+**Database Tables**:
+- `dispatch_queue` - Active dispatch queue
+- `dispatch_history` - Historical dispatch records
+- `driver_certifications` - Driver skills/certifications (future use)
+- `driver_performance` - Performance metrics tracking (future use)
+
+See `DISPATCH_API.md` for complete API documentation.
+
 ### 🚧 Future Enhancements (Out of Scope for v1.0)
 These features could be added in future versions:
 
@@ -377,22 +403,22 @@ These features could be added in future versions:
    - Route optimization
    - ETA calculation
 
-3. **Automated Notifications**
+2. **Automated Notifications**
    - Email notifications
    - SMS via Twilio
    - Real-time push notifications
 
-4. **Mobile Responsive Design**
+3. **Mobile Responsive Design**
    - Progressive Web App (PWA)
    - Offline functionality
    - Touch-optimized interface
 
-5. **Advanced Analytics**
+4. **Advanced Analytics**
    - Predictive demand forecasting
    - Customer behavior analysis
    - Revenue optimization
 
-6. **Third-party Integrations**
+5. **Third-party Integrations**
    - GPS device integration
    - Payment processing
    - Mapping services

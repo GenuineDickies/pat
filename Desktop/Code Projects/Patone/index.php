@@ -41,6 +41,17 @@ $router->addRoute('GET', '/reports/monthly', 'ReportController', 'monthly');
 $router->addRoute('GET', '/settings', 'SettingController', 'index');
 $router->addRoute('POST', '/settings', 'SettingController', 'update');
 
+// Dispatch routes
+$router->addRoute('GET', '/dispatch', 'DispatchController', 'index');
+$router->addRoute('POST', '/dispatch/autoDispatch', 'DispatchController', 'autoDispatch');
+$router->addRoute('POST', '/dispatch/manualDispatch', 'DispatchController', 'manualDispatch');
+$router->addRoute('GET', '/dispatch/findDriver/{id}', 'DispatchController', 'findDriver');
+$router->addRoute('GET', '/dispatch/getDriverOptions/{id}', 'DispatchController', 'getDriverOptions');
+$router->addRoute('POST', '/dispatch/enqueue', 'DispatchController', 'enqueue');
+$router->addRoute('POST', '/dispatch/handleEmergency', 'DispatchController', 'handleEmergency');
+$router->addRoute('GET', '/dispatch/history', 'DispatchController', 'history');
+$router->addRoute('GET', '/dispatch/queueStats', 'DispatchController', 'queueStats');
+
 // API routes
 $router->addRoute('GET', '/api/customers', 'ApiController', 'getCustomers');
 $router->addRoute('GET', '/api/requests', 'ApiController', 'getRequests');
