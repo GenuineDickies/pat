@@ -137,7 +137,8 @@ class ServiceRequestStaticTest {
         $content = file_get_contents($file);
 
         foreach ($methods as $method) {
-            if (preg_match('/function\s+' . preg_quote($method) . '\s*\(/', $content)) {
+            // Match method with optional visibility modifiers and return types
+            if (preg_match('/(public|private|protected)?\s*(static)?\s*function\s+' . preg_quote($method) . '\s*\(/i', $content)) {
                 $this->pass("$className::$method() method is defined");
             } else {
                 $this->fail("$className::$method() method not found");
