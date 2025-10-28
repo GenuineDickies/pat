@@ -76,8 +76,19 @@ All models extend the base `Model` class and provide complete CRUD operations:
 - `POST /drivers/edit/{id}` - Update driver
 - `GET /drivers/delete/{id}` - Delete driver
 - `GET /drivers/view/{id}` - View driver details
+- `GET /drivers/dashboard/{id}` - Driver comprehensive dashboard
 - `POST /drivers/updateStatus/{id}` - Update driver status
 - `POST /drivers/updateLocation/{id}` - Update GPS location
+- `GET /drivers/certifications/{id}` - Manage driver certifications
+- `POST /drivers/addCertification/{id}` - Add certification
+- `GET /drivers/deleteCertification/{driverId}/{certId}` - Delete certification
+- `GET /drivers/documents/{id}` - Manage driver documents
+- `POST /drivers/uploadDocument/{id}` - Upload document
+- `GET /drivers/deleteDocument/{driverId}/{docId}` - Delete document
+- `GET /drivers/schedule/{id}` - View/edit availability schedule
+- `POST /drivers/saveSchedule/{id}` - Save availability schedule
+- `GET /drivers/workload/{id?}` - View driver workload or distribution
+- `POST /drivers/updateMaxWorkload/{id}` - Update max workload capacity
 
 #### RequestController
 **Routes**:
@@ -129,6 +140,12 @@ All models extend the base `Model` class and provide complete CRUD operations:
 #### Driver Management
 - `drivers.php` - Driver listing with search/filter
 - `driver_form.php` - Add/edit driver form
+- `driver_details.php` - Driver detail view with performance metrics
+- `driver_dashboard.php` - Comprehensive driver dashboard with all metrics
+- `driver_certifications.php` - Manage driver certifications and licenses
+- `driver_documents.php` - Upload and manage driver documents
+- `driver_schedule.php` - Configure weekly availability schedule
+- `workload_distribution.php` - Monitor and balance driver workload across fleet
 
 #### Service Request Management
 - `requests.php` - Request listing with advanced filters
@@ -143,19 +160,31 @@ All models extend the base `Model` class and provide complete CRUD operations:
 - `settings.php` - System settings management interface
 
 ### 5. Testing
-**Location**: `/tests/BasicTest.php`
+**Location**: `/tests/`
+
+**Test Files**:
+- `BasicTest.php` - Core functionality tests
+- `DriverManagementTest.php` - Driver management enhancements tests
 
 **Running Tests**:
 ```bash
+# Run all basic tests
 cd tests
 php BasicTest.php
+
+# Run driver management tests
+php DriverManagementTest.php
 ```
 
-Tests cover:
+**Test Coverage**:
 - Database connectivity
 - Model instantiation and basic operations
 - Statistics retrieval
 - Data integrity checks
+- Driver certifications CRUD operations
+- Driver documents management
+- Availability scheduling
+- Workload balancing and distribution
 
 ## Setup Instructions
 
@@ -181,10 +210,11 @@ Tests cover:
    CREATE DATABASE roadside_assistance CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
    ```
 
-3. **Run Migration**
+3. **Run Migrations**
    ```bash
    cd database/migrations
    php 001_initial_setup.php
+   php 002_driver_management_enhancements.php
    ```
 
 4. **Set Permissions**
@@ -243,6 +273,10 @@ The application follows a clean MVC architecture:
    - GPS location updates
    - Performance metrics
    - Rating system
+   - **Certification management** ⭐ New
+   - **Document management** ⭐ New
+   - **Availability scheduling** ⭐ New
+   - **Workload balancing** ⭐ New
 
 4. **RESTful API**
    - Complete CRUD endpoints
@@ -271,6 +305,64 @@ The application follows a clean MVC architecture:
    - Basic test suite
    - Model testing
    - Database connectivity tests
+   - Driver management enhancements tests
+
+## Driver Management Features (v1.0 Enhancements)
+
+### Certification Management
+Track and manage driver certifications with expiry monitoring:
+- Add/edit/delete certifications
+- Track certification numbers and issuing authorities
+- Monitor expiry dates with automated alerts
+- Support for multiple certification types (CDL, First Aid, Towing License, etc.)
+- Document attachment for certification proof
+
+### Document Management
+Centralized document storage for driver-related files:
+- Upload various document types (Insurance, Registration, Background Checks, etc.)
+- Track document expiry dates
+- File size and type validation
+- Document status tracking (active, expired, pending review)
+- Download and view documents
+
+### Availability Scheduling
+Configure driver availability on a weekly basis:
+- Day-by-day schedule configuration
+- Multiple time slots per day support
+- Mark specific days/times as available or unavailable
+- Schedule notes for special circumstances
+- Real-time availability checking
+- Quick "standard hours" preset
+
+### Workload Balancing
+Monitor and distribute workload across drivers:
+- Track current workload vs maximum capacity
+- Utilization percentage calculation
+- Identify overloaded and underutilized drivers
+- Automatic capacity-based recommendations
+- Visual workload distribution dashboard
+- Configurable max workload per driver
+
+### Driver Dashboard
+Comprehensive view of driver performance and status:
+- Real-time performance metrics
+- Workload visualization
+- Certification and document status
+- Availability schedule summary
+- GPS location tracking
+- Quick status change actions
+- Performance analytics (30-day rolling)
+
+### Database Tables Added
+**Migration 002** adds the following tables:
+- `driver_certifications` - Driver licenses and certifications
+- `driver_documents` - Document storage and tracking
+- `driver_availability_schedule` - Weekly availability configuration
+
+**Driver table enhancements**:
+- `current_workload` - Active request count
+- `max_workload` - Maximum concurrent requests
+- `availability_notes` - Notes about driver availability
 
 ### ✅ Automated Dispatch System (v1.1 - IMPLEMENTED)
 Complete automated dispatch system with intelligent driver selection:
@@ -299,9 +391,14 @@ Complete automated dispatch system with intelligent driver selection:
 See `DISPATCH_API.md` for complete API documentation.
 
 ### 🚧 Future Enhancements (Out of Scope for v1.0)
-These features are referenced in the PRD but require separate implementation:
+These features could be added in future versions:
 
-1. **Real-time GPS Tracking**
+1. **Advanced Automated Dispatch System**
+   - AI-powered driver selection
+   - Load balancing
+   - Emergency request prioritization
+
+2. **Real-time GPS Tracking**
    - Live driver location mapping
    - Route optimization
    - ETA calculation
