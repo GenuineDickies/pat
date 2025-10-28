@@ -8,6 +8,7 @@ import os
 import sys
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional
+import calendar
 
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -82,7 +83,7 @@ class ReportGenerator:
 
     def generate_monthly_report(self, year: int, month: int) -> str:
         """Generate monthly operations report"""
-        filename = f"monthly_report_{year}_{month"02d"}.pdf"
+        filename = f"monthly_report_{year}_{month:02d}.pdf"
         filepath = os.path.join(self.output_dir, filename)
 
         # Get data
@@ -305,10 +306,10 @@ class ReportGenerator:
             ['Total Requests', str(stats.get('total_requests', 0))],
             ['Completed Requests', str(stats.get('completed_requests', 0))],
             ['Cancelled Requests', str(stats.get('cancelled_requests', 0))],
-            ['Average Completion Time', f"{stats.get('avg_completion_time', 0)".1f"} minutes"],
-            ['Total Revenue', f"${stats.get('total_revenue', 0)".2f"}"],
+            ['Average Completion Time', f"{stats.get('avg_completion_time', 0):.1f} minutes"],
+            ['Total Revenue', f"${stats.get('total_revenue', 0):.2f}"],
             ['Active Drivers', str(stats.get('active_drivers', 0))],
-            ['Average Response Time', f"{stats.get('avg_response_time', 0)".1f"} minutes"]
+            ['Average Response Time', f"{stats.get('avg_response_time', 0):.1f} minutes"]
         ]
 
         stats_table = Table(stats_data)
@@ -334,8 +335,8 @@ class ReportGenerator:
             service_data.append([
                 service['service_type'],
                 str(service['request_count']),
-                f"${service['total_revenue']".2f"}",
-                f"${service['avg_cost']".2f"}"
+                f"${service['total_revenue']:.2f}",
+                f"${service['avg_cost']:.2f}"
             ])
 
         service_table = Table(service_data)
@@ -361,9 +362,9 @@ class ReportGenerator:
             driver_data.append([
                 f"{driver['first_name']} {driver['last_name']}",
                 str(driver['services_completed']),
-                f"${driver['revenue_generated']".2f"}",
-                f"{driver['avg_service_time']".1f"}m",
-                f"{driver['avg_rating']".1f"}/5"
+                f"${driver['revenue_generated']:.2f}",
+                f"{driver['avg_service_time']:.1f}m",
+                f"{driver['avg_rating']:.1f}/5"
             ])
 
         driver_table = Table(driver_data)
@@ -386,8 +387,8 @@ class ReportGenerator:
 
         satisfaction_data = [
             ['Metric', 'Value'],
-            ['Average Rating', f"{satisfaction.get('avg_rating', 0)".1f"}/5"],
-            ['Satisfaction Rate', f"{satisfaction.get('satisfaction_rate', 0)".1f"}%"],
+            ['Average Rating', f"{satisfaction.get('avg_rating', 0):.1f}/5"],
+            ['Satisfaction Rate', f"{satisfaction.get('satisfaction_rate', 0):.1f}%"],
             ['Total Rated Services', str(satisfaction.get('total_rated_services', 0))]
         ]
 
@@ -408,6 +409,161 @@ class ReportGenerator:
         # Build PDF
         doc.build(story)
         print(f"Daily report generated: {filepath}")
+
+    def _get_monthly_statistics(self, conn, year: int, month: int) -> Dict:
+        """Get monthly statistics"""
+        cursor = conn.cursor(dictionary=True)
+        
+        start_date = f"{year}-{month:02d}-01"
+        last_day = calendar.monthrange(year, month)[1]
+        end_date = f"{year}-{month:02d}-{last_day}"
+        
+        cursor.execute("""
+            SELECT COUNT(*) as total_requests,
+                   SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed_requests,
+                   SUM(CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END) as cancelled_requests,
+                   COALESCE(SUM(CASE WHEN status = 'completed' THEN actual_cost ELSE 0 END), 0) as total_revenue,
+                   AVG(CASE WHEN status = 'completed' THEN actual_cost END) as avg_service_cost
+            FROM service_requests
+            WHERE DATE(created_at) BETWEEN %s AND %s
+        """, (start_date, end_date))
+        
+        stats = cursor.fetchone()
+        cursor.close()
+        return stats
+
+    def _get_monthly_trends(self, conn, year: int, month: int) -> List[Dict]:
+        """Get monthly trends"""
+        cursor = conn.cursor(dictionary=True)
+        
+        start_date = f"{year}-{month:02d}-01"
+        last_day = calendar.monthrange(year, month)[1]
+        end_date = f"{year}-{month:02d}-{last_day}"
+        
+        cursor.execute("""
+            SELECT DATE(created_at) as date,
+                   COUNT(*) as total,
+                   SUM(CASE WHEN status = 'completed' THEN actual_cost ELSE 0 END) as revenue
+            FROM service_requests
+            WHERE DATE(created_at) BETWEEN %s AND %s
+            GROUP BY DATE(created_at)
+            ORDER BY date
+        """, (start_date, end_date))
+        
+        results = cursor.fetchall()
+        cursor.close()
+        return results
+
+    def _get_top_customers(self, conn, year: int, month: int) -> List[Dict]:
+        """Get top customers for the month"""
+        cursor = conn.cursor(dictionary=True)
+        
+        start_date = f"{year}-{month:02d}-01"
+        last_day = calendar.monthrange(year, month)[1]
+        end_date = f"{year}-{month:02d}-{last_day}"
+        
+        cursor.execute("""
+            SELECT c.first_name, c.last_name,
+                   COUNT(sr.id) as service_count,
+                   SUM(sr.actual_cost) as total_spent
+            FROM customers c
+            JOIN service_requests sr ON c.id = sr.customer_id
+            WHERE DATE(sr.created_at) BETWEEN %s AND %s
+                  AND sr.status = 'completed'
+            GROUP BY c.id, c.first_name, c.last_name
+            ORDER BY total_spent DESC
+            LIMIT 10
+        """, (start_date, end_date))
+        
+        results = cursor.fetchall()
+        cursor.close()
+        return results
+
+    def _get_service_type_analysis(self, conn, year: int, month: int) -> Dict:
+        """Get service type analysis"""
+        cursor = conn.cursor(dictionary=True)
+        
+        start_date = f"{year}-{month:02d}-01"
+        last_day = calendar.monthrange(year, month)[1]
+        end_date = f"{year}-{month:02d}-{last_day}"
+        
+        cursor.execute("""
+            SELECT st.name,
+                   COUNT(sr.id) as request_count,
+                   SUM(CASE WHEN sr.status = 'completed' THEN sr.actual_cost ELSE 0 END) as revenue
+            FROM service_types st
+            LEFT JOIN service_requests sr ON st.id = sr.service_type_id
+                  AND DATE(sr.created_at) BETWEEN %s AND %s
+            GROUP BY st.id, st.name
+            ORDER BY request_count DESC
+        """, (start_date, end_date))
+        
+        results = cursor.fetchall()
+        cursor.close()
+        return {'service_types': results}
+
+    def _get_customer_details(self, conn, customer_id: int) -> Dict:
+        """Get customer details"""
+        cursor = conn.cursor(dictionary=True)
+        
+        cursor.execute("""
+            SELECT * FROM customers WHERE id = %s
+        """, (customer_id,))
+        
+        result = cursor.fetchone()
+        cursor.close()
+        return result
+
+    def _get_customer_service_history(self, conn, customer_id: int) -> List[Dict]:
+        """Get customer service history"""
+        cursor = conn.cursor(dictionary=True)
+        
+        cursor.execute("""
+            SELECT sr.*, st.name as service_type_name
+            FROM service_requests sr
+            LEFT JOIN service_types st ON sr.service_type_id = st.id
+            WHERE sr.customer_id = %s
+            ORDER BY sr.created_at DESC
+            LIMIT 50
+        """, (customer_id,))
+        
+        results = cursor.fetchall()
+        cursor.close()
+        return results
+
+    def _get_customer_spending_analysis(self, conn, customer_id: int) -> Dict:
+        """Get customer spending analysis"""
+        cursor = conn.cursor(dictionary=True)
+        
+        cursor.execute("""
+            SELECT COUNT(*) as total_services,
+                   SUM(actual_cost) as total_spent,
+                   AVG(actual_cost) as avg_per_service,
+                   MAX(actual_cost) as max_spent
+            FROM service_requests
+            WHERE customer_id = %s AND status = 'completed'
+        """, (customer_id,))
+        
+        result = cursor.fetchone()
+        cursor.close()
+        return result
+
+    def _get_customer_loyalty_metrics(self, conn, customer_id: int) -> Dict:
+        """Get customer loyalty metrics"""
+        cursor = conn.cursor(dictionary=True)
+        
+        cursor.execute("""
+            SELECT MIN(created_at) as first_service,
+                   MAX(created_at) as last_service,
+                   DATEDIFF(NOW(), MIN(created_at)) as days_as_customer,
+                   COUNT(*) as total_services
+            FROM service_requests
+            WHERE customer_id = %s
+        """, (customer_id,))
+        
+        result = cursor.fetchone()
+        cursor.close()
+        return result
 
     def _create_monthly_report_pdf(self, filepath: str, year: int, month: int,
                                  monthly_stats: Dict, trends: List[Dict],

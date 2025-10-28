@@ -6,6 +6,22 @@
     <meta name="description" content="Roadside Assistance Admin Platform">
     <meta name="author" content="Roadside Assistance Company">
 
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#2563eb">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Roadside Admin">
+    <link rel="manifest" href="<?php echo SITE_URL; ?>manifest.json">
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" sizes="152x152" href="<?php echo SITE_URL; ?>assets/images/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="<?php echo SITE_URL; ?>assets/images/icon-192x192.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="<?php echo SITE_URL; ?>assets/images/icon-72x72.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="<?php echo SITE_URL; ?>assets/images/icon-72x72.png">
+
     <title><?php echo isset($pageTitle) ? $pageTitle . ' - ' : ''; ?><?php echo SITE_NAME; ?></title>
 
     <!-- Bootstrap CSS -->
@@ -31,8 +47,11 @@
 </head>
 <body>
     <?php if (isLoggedIn()): ?>
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
     <!-- Sidebar -->
-    <nav class="sidebar">
+    <nav class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <h4><?php echo SITE_NAME; ?></h4>
         </div>
@@ -89,7 +108,7 @@
             <div class="container-fluid">
                 <div class="row align-items-center">
                     <div class="col-md-6">
-                        <button class="sidebar-toggle d-md-none" id="sidebarToggle">
+                        <button class="sidebar-toggle" id="sidebarToggle">
                             <i class="bi bi-list"></i>
                         </button>
                         <h5 class="page-title mb-0"><?php echo isset($pageTitle) ? $pageTitle : 'Dashboard'; ?></h5>
@@ -144,6 +163,82 @@
     <!-- Custom JavaScript -->
     <script src="<?php echo SITE_URL; ?>assets/js/main.js"></script>
     <script src="<?php echo SITE_URL; ?>frontend/js/app.js"></script>
+
+    <!-- Service Worker Registration -->
+    <script>
+        // Register service worker for PWA functionality
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('<?php echo SITE_URL; ?>service-worker.js')
+                    .then(function(registration) {
+                        console.log('ServiceWorker registration successful:', registration.scope);
+                        
+                        // Check for updates periodically
+                        setInterval(function() {
+                            registration.update();
+                        }, 60000); // Check every minute
+
+                        // Handle service worker updates
+                        registration.addEventListener('updatefound', function() {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', function() {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // New service worker available, show update notification
+                                    if (confirm('A new version is available! Click OK to update.')) {
+                                        newWorker.postMessage({ type: 'SKIP_WAITING' });
+                                        window.location.reload();
+                                    }
+                                }
+                            });
+                        });
+                    })
+                    .catch(function(error) {
+                        console.log('ServiceWorker registration failed:', error);
+                    });
+
+                // Handle service worker controlling the page
+                let refreshing = false;
+                navigator.serviceWorker.addEventListener('controllerchange', function() {
+                    if (!refreshing) {
+                        refreshing = true;
+                        window.location.reload();
+                    }
+                });
+            });
+        }
+
+        // Install prompt for PWA
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', function(e) {
+            // Prevent the mini-infobar from appearing on mobile
+            e.preventDefault();
+            // Stash the event so it can be triggered later
+            deferredPrompt = e;
+            
+            // Show install button or notification (optional)
+            console.log('PWA install prompt available');
+            
+            // You can show a custom install button here
+            // Example: showInstallPromotion();
+        });
+
+        // Track PWA installation
+        window.addEventListener('appinstalled', function() {
+            console.log('PWA was installed');
+            deferredPrompt = null;
+        });
+
+        // Check if app is running as PWA
+        function isPWA() {
+            return window.matchMedia('(display-mode: standalone)').matches ||
+                   window.navigator.standalone === true;
+        }
+
+        if (isPWA()) {
+            console.log('Running as PWA');
+            // Add PWA-specific behaviors here
+        }
+    </script>
 
     <?php if (isset($extraScripts)) echo $extraScripts; ?>
 </body>

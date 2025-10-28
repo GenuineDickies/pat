@@ -254,5 +254,293 @@ class Driver extends Model {
 
         return $stats;
     }
+
+    // ============================================
+    // Certification Management
+    // ============================================
+
+    // Get driver certifications
+    public function getCertifications($id) {
+        return $this->db->getRows(
+            "SELECT * FROM driver_certifications WHERE driver_id = ? ORDER BY expiry_date ASC",
+            [$id]
+        );
+    }
+
+    // Add certification
+    public function addCertification($driverId, $data) {
+        return $this->db->insert(
+            "INSERT INTO driver_certifications 
+             (driver_id, certification_type, certification_number, issuing_authority, 
+              issue_date, expiry_date, status, document_path, notes)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            [
+                $driverId,
+                $data['certification_type'],
+                $data['certification_number'] ?? null,
+                $data['issuing_authority'] ?? null,
+                $data['issue_date'] ?? null,
+                $data['expiry_date'] ?? null,
+                $data['status'] ?? 'active',
+                $data['document_path'] ?? null,
+                $data['notes'] ?? null
+            ]
+        );
+    }
+
+    // Update certification
+    public function updateCertification($id, $data) {
+        return $this->db->update(
+            "UPDATE driver_certifications SET
+             certification_type = ?, certification_number = ?, issuing_authority = ?,
+             issue_date = ?, expiry_date = ?, status = ?, document_path = ?, notes = ?,
+             updated_at = NOW()
+             WHERE id = ?",
+            [
+                $data['certification_type'],
+                $data['certification_number'] ?? null,
+                $data['issuing_authority'] ?? null,
+                $data['issue_date'] ?? null,
+                $data['expiry_date'] ?? null,
+                $data['status'] ?? 'active',
+                $data['document_path'] ?? null,
+                $data['notes'] ?? null,
+                $id
+            ]
+        );
+    }
+
+    // Delete certification
+    public function deleteCertification($id) {
+        return $this->db->delete("DELETE FROM driver_certifications WHERE id = ?", [$id]);
+    }
+
+    // Get expiring certifications (within days)
+    public function getExpiringCertifications($days = 30) {
+        return $this->db->getRows(
+            "SELECT dc.*, d.first_name, d.last_name, d.email
+             FROM driver_certifications dc
+             JOIN drivers d ON dc.driver_id = d.id
+             WHERE dc.expiry_date IS NOT NULL 
+             AND dc.expiry_date <= DATE_ADD(CURDATE(), INTERVAL ? DAY)
+             AND dc.expiry_date >= CURDATE()
+             AND dc.status = 'active'
+             ORDER BY dc.expiry_date ASC",
+            [$days]
+        );
+    }
+
+    // ============================================
+    // Document Management
+    // ============================================
+
+    // Get driver documents
+    public function getDocuments($id) {
+        return $this->db->getRows(
+            "SELECT * FROM driver_documents WHERE driver_id = ? ORDER BY created_at DESC",
+            [$id]
+        );
+    }
+
+    // Add document
+    public function addDocument($driverId, $data) {
+        return $this->db->insert(
+            "INSERT INTO driver_documents 
+             (driver_id, document_type, document_name, file_path, file_size, 
+              mime_type, expiry_date, status, uploaded_by, notes)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            [
+                $driverId,
+                $data['document_type'],
+                $data['document_name'],
+                $data['file_path'],
+                $data['file_size'] ?? null,
+                $data['mime_type'] ?? null,
+                $data['expiry_date'] ?? null,
+                $data['status'] ?? 'pending_review',
+                $data['uploaded_by'] ?? null,
+                $data['notes'] ?? null
+            ]
+        );
+    }
+
+    // Update document
+    public function updateDocument($id, $data) {
+        return $this->db->update(
+            "UPDATE driver_documents SET
+             document_type = ?, document_name = ?, expiry_date = ?, 
+             status = ?, notes = ?, updated_at = NOW()
+             WHERE id = ?",
+            [
+                $data['document_type'],
+                $data['document_name'],
+                $data['expiry_date'] ?? null,
+                $data['status'] ?? 'pending_review',
+                $data['notes'] ?? null,
+                $id
+            ]
+        );
+    }
+
+    // Delete document
+    public function deleteDocument($id) {
+        return $this->db->delete("DELETE FROM driver_documents WHERE id = ?", [$id]);
+    }
+
+    // ============================================
+    // Availability Scheduling
+    // ============================================
+
+    // Get driver availability schedule
+    public function getAvailabilitySchedule($id) {
+        return $this->db->getRows(
+            "SELECT * FROM driver_availability_schedule 
+             WHERE driver_id = ? 
+             ORDER BY day_of_week ASC, start_time ASC",
+            [$id]
+        );
+    }
+
+    // Set availability schedule
+    public function setAvailabilitySchedule($driverId, $dayOfWeek, $startTime, $endTime, $isAvailable = true, $notes = null) {
+        // Check if schedule exists
+        $existing = $this->db->getRow(
+            "SELECT id FROM driver_availability_schedule 
+             WHERE driver_id = ? AND day_of_week = ? AND start_time = ?",
+            [$driverId, $dayOfWeek, $startTime]
+        );
+
+        if ($existing) {
+            // Update existing
+            return $this->db->update(
+                "UPDATE driver_availability_schedule 
+                 SET end_time = ?, is_available = ?, notes = ?, updated_at = NOW()
+                 WHERE id = ?",
+                [$endTime, $isAvailable, $notes, $existing['id']]
+            );
+        } else {
+            // Insert new
+            return $this->db->insert(
+                "INSERT INTO driver_availability_schedule 
+                 (driver_id, day_of_week, start_time, end_time, is_available, notes)
+                 VALUES (?, ?, ?, ?, ?, ?)",
+                [$driverId, $dayOfWeek, $startTime, $endTime, $isAvailable, $notes]
+            );
+        }
+    }
+
+    // Delete availability schedule
+    public function deleteAvailabilitySchedule($id) {
+        return $this->db->delete("DELETE FROM driver_availability_schedule WHERE id = ?", [$id]);
+    }
+
+    // Check if driver is scheduled to be available now
+    public function isScheduledAvailable($id) {
+        $now = new DateTime();
+        $dayOfWeek = (int)$now->format('w'); // 0 = Sunday
+        $currentTime = $now->format('H:i:s');
+
+        $schedule = $this->db->getRow(
+            "SELECT * FROM driver_availability_schedule 
+             WHERE driver_id = ? 
+             AND day_of_week = ? 
+             AND start_time <= ? 
+             AND end_time >= ?
+             AND is_available = 1",
+            [$id, $dayOfWeek, $currentTime, $currentTime]
+        );
+
+        return !empty($schedule);
+    }
+
+    // ============================================
+    // Workload Balancing
+    // ============================================
+
+    // Get driver workload
+    public function getWorkload($id) {
+        $activeRequests = (int)$this->db->getValue(
+            "SELECT COUNT(*) FROM service_requests 
+             WHERE driver_id = ? AND status IN ('assigned', 'in_progress')",
+            [$id]
+        );
+
+        $driver = $this->getById($id);
+        $maxWorkload = $driver['max_workload'] ?? 3;
+
+        return [
+            'current' => $activeRequests,
+            'max' => $maxWorkload,
+            'available_capacity' => max(0, $maxWorkload - $activeRequests),
+            'utilization_percentage' => $maxWorkload > 0 ? ($activeRequests / $maxWorkload * 100) : 0
+        ];
+    }
+
+    // Update driver workload
+    public function updateWorkload($id) {
+        $activeRequests = (int)$this->db->getValue(
+            "SELECT COUNT(*) FROM service_requests 
+             WHERE driver_id = ? AND status IN ('assigned', 'in_progress')",
+            [$id]
+        );
+
+        return $this->db->update(
+            "UPDATE {$this->table} SET current_workload = ?, updated_at = NOW() WHERE id = ?",
+            [$activeRequests, $id]
+        );
+    }
+
+    // Get drivers with available capacity (for workload balancing)
+    public function getDriversWithCapacity($latitude = null, $longitude = null, $maxDistance = 50) {
+        $query = "SELECT *,
+                         (max_workload - current_workload) as available_capacity";
+        
+        if ($latitude && $longitude) {
+            $query .= ",
+                      (6371 * acos(cos(radians(?)) * cos(radians(current_latitude)) * 
+                       cos(radians(current_longitude) - radians(?)) + 
+                       sin(radians(?)) * sin(radians(current_latitude)))) as distance";
+        }
+
+        $query .= " FROM {$this->table}
+                    WHERE status = 'available'
+                    AND (max_workload - current_workload) > 0";
+
+        $params = [];
+        if ($latitude && $longitude) {
+            $params = [$latitude, $longitude, $latitude];
+            $query .= " HAVING distance <= ?";
+            $params[] = $maxDistance;
+        }
+
+        $query .= " ORDER BY available_capacity DESC, rating DESC";
+
+        return $this->db->getRows($query, $params);
+    }
+
+    // Set max workload for driver
+    public function setMaxWorkload($id, $maxWorkload) {
+        if ($maxWorkload < 1) {
+            throw new Exception("Max workload must be at least 1");
+        }
+
+        return $this->db->update(
+            "UPDATE {$this->table} SET max_workload = ?, updated_at = NOW() WHERE id = ?",
+            [$maxWorkload, $id]
+        );
+    }
+
+    // Get workload distribution across all drivers
+    public function getWorkloadDistribution() {
+        return $this->db->getRows(
+            "SELECT id, CONCAT(first_name, ' ', last_name) as name, 
+                    status, current_workload, max_workload,
+                    (max_workload - current_workload) as available_capacity,
+                    ROUND((current_workload / max_workload * 100), 2) as utilization_percentage
+             FROM {$this->table}
+             WHERE status IN ('available', 'busy')
+             ORDER BY utilization_percentage DESC, rating DESC"
+        );
+    }
 }
 ?>
