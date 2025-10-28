@@ -8,7 +8,7 @@ class Notification extends Model {
     protected $table = 'notifications';
 
     // Create notification
-    public function create($userId, $type, $title, $message, $relatedType = null, $relatedId = null) {
+    public function createNotification($userId, $type, $title, $message, $relatedType = null, $relatedId = null) {
         return $this->db->insert(
             "INSERT INTO {$this->table} 
              (user_id, type, title, message, related_type, related_id, is_read, created_at)
@@ -65,7 +65,7 @@ class Notification extends Model {
 
     // Notify request assigned
     public function notifyRequestAssigned($userId, $requestId, $requestDetails) {
-        return $this->create(
+        return $this->createNotification(
             $userId,
             'request_assigned',
             'New Request Assigned',
@@ -77,7 +77,7 @@ class Notification extends Model {
 
     // Notify status changed
     public function notifyStatusChanged($userId, $requestId, $oldStatus, $newStatus) {
-        return $this->create(
+        return $this->createNotification(
             $userId,
             'status_changed',
             'Request Status Updated',
@@ -89,7 +89,7 @@ class Notification extends Model {
 
     // Notify request completed
     public function notifyRequestCompleted($userId, $requestId) {
-        return $this->create(
+        return $this->createNotification(
             $userId,
             'request_completed',
             'Request Completed',

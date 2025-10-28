@@ -348,7 +348,7 @@ class RequestController extends Controller {
                 // Notify driver
                 $driver = $this->driverModel->find($request['driver_id']);
                 if ($driver && $driver['user_id']) {
-                    $this->notificationModel->create(
+                    $this->notificationModel->createNotification(
                         $driver['user_id'],
                         'request_cancelled',
                         'Request Cancelled',
