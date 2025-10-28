@@ -343,10 +343,17 @@ class SettingsTest {
         echo "\n===========================================\n";
         echo "Test Results Summary\n";
         echo "===========================================\n";
-        echo "Total Tests: " . ($this->passed + $this->failed) . "\n";
+        $total = $this->passed + $this->failed;
+        echo "Total Tests: $total\n";
         echo "Passed: " . $this->passed . "\n";
         echo "Failed: " . $this->failed . "\n";
-        echo "Success Rate: " . round(($this->passed / max(1, $this->passed + $this->failed)) * 100, 2) . "%\n";
+        
+        if ($total > 0) {
+            echo "Success Rate: " . round(($this->passed / $total) * 100, 2) . "%\n";
+        } else {
+            echo "Success Rate: N/A (no tests run)\n";
+        }
+        
         echo "===========================================\n\n";
 
         if ($this->failed > 0) {
@@ -359,13 +366,12 @@ class SettingsTest {
     }
 }
 
-// Run tests if called from command line
+// Run tests
+$test = new SettingsTest();
 if (php_sapi_name() === 'cli') {
-    $test = new SettingsTest();
     $test->run();
 } else {
     echo "<html><body><pre>";
-    $test = new SettingsTest();
     $test->run();
     echo "</pre></body></html>";
 }
