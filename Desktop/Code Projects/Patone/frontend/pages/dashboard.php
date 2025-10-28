@@ -87,6 +87,78 @@
         </div>
     </div>
 
+    <!-- Performance Metrics Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-start border-primary border-4">
+                <div class="card-body">
+                    <div class="text-muted small">Avg Response Time</div>
+                    <h4 id="avgResponseTime" class="mb-0">-</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-start border-success border-4">
+                <div class="card-body">
+                    <div class="text-muted small">Completion Rate</div>
+                    <h4 id="completionRate" class="mb-0">-</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-start border-info border-4">
+                <div class="card-body">
+                    <div class="text-muted small">Customer Satisfaction</div>
+                    <h4 id="customerSatisfaction" class="mb-0">-</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-start border-warning border-4">
+                <div class="card-body">
+                    <div class="text-muted small">Peak Hours</div>
+                    <h4 id="peakHours" class="mb-0">-</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row mb-4">
+        <div class="col-lg-8 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <canvas id="requestsTimelineChart" height="80"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <canvas id="serviceTypeChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Charts Row -->
+    <div class="row mb-4">
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <canvas id="driverPerformanceChart" height="120"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <canvas id="hourlyRequestsChart" height="120"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Main Dashboard Content -->
     <div class="row">
         <!-- Recent Requests -->
@@ -205,7 +277,7 @@
             </div>
 
             <!-- Driver Status -->
-            <div class="card">
+            <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Driver Status</h5>
                     <button class="btn btn-sm btn-outline-primary" onclick="refreshDrivers()">
@@ -241,36 +313,28 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Recent Activity Feed -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Activity</h5>
+                </div>
+                <div class="card-body">
+                    <div id="recentActivity">
+                        <div class="text-center py-3">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
+<script src="<?php echo SITE_URL; ?>assets/js/dashboard.js"></script>
 <script>
-function refreshDashboard() {
-    // Simulate dashboard refresh
-    $('#activeRequests, #completedToday, #availableDrivers, #totalCustomers').each(function() {
-        $(this).addClass('loading');
-    });
-
-    // In a real application, this would make an AJAX call
-    setTimeout(function() {
-        $('#activeRequests, #completedToday, #availableDrivers, #totalCustomers').removeClass('loading');
-    }, 1000);
-}
-
-function refreshDrivers() {
-    $('#driverStatus').addClass('loading');
-    // In a real application, this would refresh driver data
-    setTimeout(function() {
-        $('#driverStatus').removeClass('loading');
-    }, 500);
-}
-
-function generateReport() {
-    // Redirect to reports page
-    window.location.href = '<?php echo SITE_URL; ?>reports';
-}
-
 // Initialize DataTable for recent requests
 $(document).ready(function() {
     $('#recentRequestsTable').DataTable({

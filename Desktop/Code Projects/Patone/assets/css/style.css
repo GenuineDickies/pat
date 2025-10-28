@@ -1029,3 +1029,153 @@ button {
         color: var(--dark-color);
     }
 }
+
+/* Dashboard Enhancements */
+.stats-card {
+    border: none;
+    box-shadow: var(--box-shadow);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stats-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--box-shadow-lg);
+}
+
+.stats-card h2 {
+    font-weight: 700;
+    font-size: 2rem;
+}
+
+/* Chart containers */
+canvas {
+    max-width: 100%;
+    height: auto !important;
+}
+
+/* Performance metrics cards */
+.card.border-start {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card.border-start:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--box-shadow-lg);
+}
+
+/* Driver status widget */
+.driver-item {
+    padding: 8px;
+    border-radius: var(--border-radius);
+    transition: background-color 0.2s;
+}
+
+.driver-item:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.driver-avatar {
+    font-weight: 600;
+    min-width: 32px;
+}
+
+/* Recent activity feed */
+.activity-item {
+    padding: 10px 0;
+    transition: background-color 0.2s;
+}
+
+.activity-item:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.activity-item:last-child {
+    border-bottom: none !important;
+}
+
+/* Loading animation for dashboard elements */
+.dashboard-loading {
+    position: relative;
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.dashboard-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 30px;
+    height: 30px;
+    margin: -15px 0 0 -15px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Smooth number animations */
+@keyframes countUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.stat-number {
+    animation: countUp 0.5s ease-out;
+}
+
+/* Auto-refresh indicator */
+.refresh-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background-color: var(--success-color);
+    border-radius: 50%;
+    margin-right: 6px;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.4;
+    }
+}
+
+/* Responsive chart containers */
+@media (max-width: 768px) {
+    canvas {
+        height: 250px !important;
+    }
+    
+    .stats-card h2 {
+        font-size: 1.5rem;
+    }
+}
+
+/* Print styles for dashboard */
+@media print {
+    .sidebar,
+    .top-bar,
+    .btn,
+    button {
+        display: none !important;
+    }
+    
+    .main-content {
+        margin-left: 0 !important;
+    }
+    
+    .card {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+}
