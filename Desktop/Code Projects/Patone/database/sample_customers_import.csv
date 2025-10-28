@@ -1,0 +1,6 @@
+First Name,Last Name,Email,Phone,Address,City,State,ZIP,VIP,Status,Notes
+John,Doe,john.doe@example.com,5551234567,123 Main Street,Springfield,IL,62701,No,active,Regular customer
+Jane,Smith,jane.smith@example.com,5559876543,456 Oak Avenue,Chicago,IL,60601,Yes,active,VIP customer - Priority service
+Robert,Johnson,robert.j@example.com,5555551234,789 Elm Street,Peoria,IL,61602,No,active,
+Sarah,Williams,sarah.w@example.com,5558887777,321 Pine Road,Naperville,IL,60540,Yes,active,Corporate account
+Michael,Brown,m.brown@example.com,5552223333,654 Maple Drive,Aurora,IL,60505,No,inactive,Former customer
