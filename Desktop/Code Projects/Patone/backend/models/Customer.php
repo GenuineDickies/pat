@@ -210,5 +210,71 @@ class Customer extends Model {
 
         return $stats;
     }
+
+    // Get customer tags
+    public function getTags($customerId) {
+        return $this->db->getRows(
+            "SELECT t.* FROM customer_tags t
+             INNER JOIN customer_tag_assignments cta ON t.id = cta.tag_id
+             WHERE cta.customer_id = ?
+             ORDER BY t.name",
+            [$customerId]
+        );
+    }
+
+    // Add tag to customer
+    public function addTag($customerId, $tagId) {
+        // Check if tag assignment already exists
+        $exists = $this->db->getValue(
+            "SELECT COUNT(*) FROM customer_tag_assignments WHERE customer_id = ? AND tag_id = ?",
+            [$customerId, $tagId]
+        );
+
+        if (!$exists) {
+            $this->db->insert(
+                "INSERT INTO customer_tag_assignments (customer_id, tag_id, created_at) VALUES (?, ?, NOW())",
+                [$customerId, $tagId]
+            );
+        }
+    }
+
+    // Remove tag from customer
+    public function removeTag($customerId, $tagId) {
+        $this->db->delete(
+            "DELETE FROM customer_tag_assignments WHERE customer_id = ? AND tag_id = ?",
+            [$customerId, $tagId]
+        );
+    }
+
+    // Get customers by tag
+    public function getByTag($tagId, $limit = null, $offset = 0) {
+        $limitClause = $limit ? "LIMIT ? OFFSET ?" : "";
+        $params = [$tagId];
+        
+        if ($limit) {
+            $params[] = $limit;
+            $params[] = $offset;
+        }
+
+        return $this->db->getRows(
+            "SELECT c.* FROM {$this->table} c
+             INNER JOIN customer_tag_assignments cta ON c.id = cta.customer_id
+             WHERE cta.tag_id = ?
+             ORDER BY c.last_name, c.first_name
+             $limitClause",
+            $params
+        );
+    }
+
+    // Get activity log for customer
+    public function getActivityLog($customerId, $limit = 50) {
+        return $this->db->getRows(
+            "SELECT * FROM activity_log
+             WHERE entity_type = 'customer' AND entity_id = ?
+             ORDER BY created_at DESC
+             LIMIT ?",
+            [$customerId, $limit]
+        );
+    }
 }
 ?>
