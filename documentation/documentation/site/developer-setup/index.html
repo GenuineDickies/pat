@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <meta name="author" content="Patone Team">
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Setup Guide - Patone Documentation</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" >
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="..">Patone Documentation</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href=".." class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">API</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="../api/" class="dropdown-item">API Reference</a>
+</li>
+                                    
+<li>
+    <a href="../openapi.yaml" class="dropdown-item">OpenAPI</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle active" aria-current="page" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Developer</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="./" class="dropdown-item active" aria-current="page">Setup Guide</a>
+</li>
+                                    
+<li>
+    <a href="../code-architecture/" class="dropdown-item">Code Architecture</a>
+</li>
+                                    
+<li>
+    <a href="../technical-tasks/" class="dropdown-item">Technical Tasks</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../database-schema/" class="nav-link">Database</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../deployment-guide/" class="nav-link">Deployment</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../admin-manual/" class="nav-link">Admin Manual</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../driver-mobile-app/" class="nav-link">Driver App</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../integration-guide/" class="nav-link">Integration</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../troubleshooting/" class="nav-link">Troubleshooting</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../faq/" class="nav-link">FAQ</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" href="../openapi.yaml" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="../code-architecture/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#developer-setup-guide" class="nav-link">Developer Setup Guide</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#prerequisites" class="nav-link">Prerequisites</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#step-by-step-setup" class="nav-link">Step-by-Step Setup</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#development-workflow" class="nav-link">Development Workflow</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#development-tools" class="nav-link">Development Tools</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#common-issues-solutions" class="nav-link">Common Issues &amp; Solutions</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#docker-alternative-optional" class="nav-link">Docker Alternative (Optional)</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#next-steps" class="nav-link">Next Steps</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="developer-setup-guide">Developer Setup Guide</h1>
+<p>This guide explains how to set up a local development environment for the Patone Roadside Assistance platform.</p>
+<h2 id="prerequisites">Prerequisites</h2>
+<h3 id="required-software">Required Software</h3>
+<ul>
+<li><strong>PHP 7.4+</strong> (project requirement from <code>composer.json</code>)</li>
+<li><strong>Composer</strong> for PHP dependency management</li>
+<li><strong>MySQL 5.7+ or MariaDB 10.3+</strong> for the database</li>
+<li><strong>Node.js 16+ and npm</strong> for JavaScript testing and tools</li>
+<li><strong>Git</strong> for version control</li>
+</ul>
+<h3 id="required-php-extensions">Required PHP Extensions</h3>
+<p>Ensure these PHP extensions are installed:</p>
+<pre><code class="language-bash">php -m | grep -E &quot;(pdo|pdo_mysql|mysqli|mbstring|openssl|json|curl|zip)&quot;
+</code></pre>
+<h2 id="step-by-step-setup">Step-by-Step Setup</h2>
+<h3 id="1-clone-the-repository">1. Clone the Repository</h3>
+<pre><code class="language-bash">git clone https://github.com/GenuineDickies/pat.git
+cd pat/Desktop/Code\ Projects/Patone
+</code></pre>
+<h3 id="2-install-php-dependencies">2. Install PHP Dependencies</h3>
+<pre><code class="language-bash">composer install
+</code></pre>
+<h3 id="3-database-setup">3. Database Setup</h3>
+<h4 id="create-the-database">Create the Database</h4>
+<pre><code class="language-bash"># Connect to MySQL
+mysql -u root -p
+
+# Create the database
+CREATE DATABASE roadside_assistance CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE roadside_assistance_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+exit
+</code></pre>
+<h4 id="import-the-schema">Import the Schema</h4>
+<pre><code class="language-bash"># Import main database schema
+mysql -u root -p roadside_assistance &lt; database/schema.sql
+
+# Import test database schema
+mysql -u root -p roadside_assistance_test &lt; database/schema.sql
+</code></pre>
+<h3 id="4-configuration">4. Configuration</h3>
+<p>The <code>config.php</code> file contains the main configuration. Key settings to verify:</p>
+<pre><code class="language-php">// Database Configuration (lines 23-26 in config.php)
+define('DB_HOST', 'localhost');
+define('DB_USER', 'root');          // Update with your MySQL user
+define('DB_PASS', '');              // Update with your MySQL password
+define('DB_NAME', 'roadside_assistance');
+</code></pre>
+<p><strong>Security Note:</strong> Change the <code>ENCRYPTION_KEY</code> in <code>config.php</code> before production use.</p>
+<h3 id="5-install-nodejs-dependencies-for-testing">5. Install Node.js Dependencies (for testing)</h3>
+<pre><code class="language-bash">npm install
+</code></pre>
+<h3 id="6-verify-setup-run-tests">6. Verify Setup - Run Tests</h3>
+<h4 id="php-tests-phpunit">PHP Tests (PHPUnit)</h4>
+<pre><code class="language-bash"># Run all tests
+composer test
+# Or directly with PHPUnit
+vendor/bin/phpunit
+
+# Run specific test suites
+composer test-unit        # Unit tests only
+composer test-integration # Integration tests only
+composer test-security    # Security tests only
+</code></pre>
+<h4 id="javascript-tests-jest">JavaScript Tests (Jest)</h4>
+<pre><code class="language-bash">npm test                  # Run once
+npm run test:watch       # Watch mode
+npm run test:coverage    # With coverage report
+</code></pre>
+<h4 id="end-to-end-tests-playwright">End-to-End Tests (Playwright)</h4>
+<pre><code class="language-bash">npm run test:e2e         # Headless E2E tests
+npm run test:e2e:ui      # Interactive E2E tests
+</code></pre>
+<h2 id="development-workflow">Development Workflow</h2>
+<h3 id="running-the-application-locally">Running the Application Locally</h3>
+<pre><code class="language-bash"># Start PHP development server
+php -S localhost:8000 -t . index.php
+
+# Application will be available at http://localhost:8000
+</code></pre>
+<h3 id="file-structure-overview">File Structure Overview</h3>
+<ul>
+<li><code>backend/</code> - PHP controllers, models (PSR-4 autoloaded as <code>Patone\</code> namespace)</li>
+<li><code>frontend/</code> - Frontend pages and JavaScript</li>
+<li><code>assets/</code> - Compiled CSS, JS, images</li>
+<li><code>database/</code> - Schema, migrations, sample data</li>
+<li><code>tests/</code> - All test files (Unit, Integration, Security, E2E, JavaScript)</li>
+<li><code>logs/</code> - Application logs</li>
+<li><code>uploads/</code> - File uploads directory</li>
+</ul>
+<h2 id="development-tools">Development Tools</h2>
+<h3 id="code-quality-documentation">Code Quality &amp; Documentation</h3>
+<pre><code class="language-bash"># Install PHPStan for static analysis (recommended)
+composer require --dev phpstan/phpstan
+
+# Run static analysis
+vendor/bin/phpstan analyse backend --level=7
+
+# Install phpDocumentor for API docs
+composer require --dev phpdocumentor/phpdocumentor
+
+# Generate PHP API documentation
+vendor/bin/phpdoc -d backend -t docs/phpdoc
+</code></pre>
+<h3 id="debugging-logs">Debugging &amp; Logs</h3>
+<ul>
+<li>Application logs: <code>logs/</code> directory</li>
+<li>PHP errors: Check <code>error_log</code> in project root or PHP-FPM logs</li>
+<li>Debug mode: Already enabled in <code>config.php</code> (set <code>display_errors</code> to 0 for production)</li>
+</ul>
+<h2 id="common-issues-solutions">Common Issues &amp; Solutions</h2>
+<h3 id="database-connection-errors">Database Connection Errors</h3>
+<pre><code class="language-bash"># Test MySQL connection
+mysql -u root -p -e &quot;SELECT VERSION();&quot;
+
+# Check if database exists
+mysql -u root -p -e &quot;SHOW DATABASES;&quot; | grep roadside
+</code></pre>
+<h3 id="permission-issues">Permission Issues</h3>
+<pre><code class="language-bash"># Ensure proper permissions for logs and uploads
+chmod 755 logs/ uploads/
+chmod 644 config.php
+</code></pre>
+<h3 id="missing-php-extensions">Missing PHP Extensions</h3>
+<pre><code class="language-bash"># Ubuntu/Debian
+sudo apt-get install php-pdo php-mysql php-mbstring php-curl php-zip php-json
+
+# macOS with Homebrew
+brew install php
+</code></pre>
+<h2 id="docker-alternative-optional">Docker Alternative (Optional)</h2>
+<p>For a containerized development environment, see the Docker Compose example in <code>deployment-guide.md</code>.</p>
+<h2 id="next-steps">Next Steps</h2>
+<ol>
+<li><strong>Explore the API</strong>: Use the OpenAPI spec at <code>documentation/docs/openapi.yaml</code></li>
+<li><strong>Run all tests</strong> to ensure everything works: <code>composer test &amp;&amp; npm test</code></li>
+<li><strong>Check code architecture</strong>: Read <code>documentation/docs/code-architecture.md</code></li>
+<li><strong>Review security</strong>: See <code>SECURITY.md</code> and run security tests</li>
+</ol></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

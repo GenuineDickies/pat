@@ -90,7 +90,7 @@ describe('Data Sanitization', () => {
         
         inputs.forEach(input => {
             const trimmed = input.trim();
-            expect(trimmed).toBe('text' || trimmed).toBe('spaced');
+            expect(['text', 'spaced'].includes(trimmed)).toBe(true);
             expect(trimmed).not.toMatch(/^\s|\s$/);
         });
     });

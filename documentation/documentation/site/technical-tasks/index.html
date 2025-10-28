@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <meta name="author" content="Patone Team">
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Technical Tasks - Patone Documentation</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" >
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="..">Patone Documentation</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href=".." class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">API</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="../api/" class="dropdown-item">API Reference</a>
+</li>
+                                    
+<li>
+    <a href="../openapi.yaml" class="dropdown-item">OpenAPI</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle active" aria-current="page" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Developer</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="../developer-setup/" class="dropdown-item">Setup Guide</a>
+</li>
+                                    
+<li>
+    <a href="../code-architecture/" class="dropdown-item">Code Architecture</a>
+</li>
+                                    
+<li>
+    <a href="./" class="dropdown-item active" aria-current="page">Technical Tasks</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../database-schema/" class="nav-link">Database</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../deployment-guide/" class="nav-link">Deployment</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../admin-manual/" class="nav-link">Admin Manual</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../driver-mobile-app/" class="nav-link">Driver App</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../integration-guide/" class="nav-link">Integration</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../troubleshooting/" class="nav-link">Troubleshooting</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../faq/" class="nav-link">FAQ</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" href="../code-architecture/" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="../database-schema/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#technical-tasks-how-tos" class="nav-link">Technical Tasks &amp; How-tos</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#validation-ci-setup" class="nav-link">Validation &amp; CI Setup</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="technical-tasks-how-tos">Technical Tasks &amp; How-tos</h1>
+<p>This page lists technical how-tos to support documentation maintenance and code hygiene.</p>
+<p>1) Run tests (PHPUnit)</p>
+<ul>
+<li>Run the full test suite:</li>
+</ul>
+<p>vendor/bin/phpunit --configuration phpunit.xml</p>
+<ul>
+<li>Run a single test file:</li>
+</ul>
+<p>vendor/bin/phpunit tests/SomeTest.php</p>
+<p>2) Static analysis (PHPStan)</p>
+<ul>
+<li>Install PHPStan (<code>composer require --dev phpstan/phpstan</code>)</li>
+<li>Run analysis:</li>
+</ul>
+<p>vendor/bin/phpstan analyse backend --level=7</p>
+<p>3) Generate PHPDoc</p>
+<ul>
+<li>Install <code>phpdocumentor/phpdocumentor</code> via Composer:</li>
+</ul>
+<p>composer require --dev phpdocumentor/phpdocumentor</p>
+<ul>
+<li>Generate docs:</li>
+</ul>
+<p>vendor/bin/phpdoc -d backend -t docs/phpdoc</p>
+<p>4) Keeping API spec up-to-date</p>
+<ul>
+<li>Edit <code>openapi.yaml</code> and ensure endpoints match controller implementations.</li>
+<li>Consider adding a CI check that validates <code>openapi.yaml</code> against live endpoints (contract tests).</li>
+</ul>
+<p>5) Publish documentation</p>
+<ul>
+<li>Install MkDocs:</li>
+</ul>
+<p>pip install mkdocs</p>
+<ul>
+<li>Run a local server:</li>
+</ul>
+<p>mkdocs serve -f documentation/mkdocs.yml</p>
+<ul>
+<li>Build static site:</li>
+</ul>
+<p>mkdocs build -f documentation/mkdocs.yml -d documentation/site</p>
+<ul>
+<li>CI: add a job to run <code>mkdocs build</code> and publish <code>site/</code> to GitHub Pages or other static host.</li>
+</ul>
+<p>6) Validation &amp; CI Setup</p>
+<p>See the dedicated "Validation &amp; CI" section below for complete setup instructions.</p>
+<p>6) Add PHPDoc to code</p>
+<ul>
+<li>Add <code>/** ... */</code> style comments to classes and public methods in <code>backend/controllers</code> and <code>backend/models</code>.</li>
+<li>Example:</li>
+</ul>
+<p>/*<em>
+   * Get a customer by ID.
+   *
+   * @param int $id
+   * @return array|null
+   </em>/
+  public function getCustomer(int $id): ?array
+  {
+      // ...
+  }</p>
+<h2 id="validation-ci-setup">Validation &amp; CI Setup</h2>
+<h3 id="local-validation">Local Validation</h3>
+<p>Before committing, run these validation checks:</p>
+<pre><code class="language-bash"># Validate MkDocs builds successfully
+cd /workspaces/pat
+mkdocs build -f documentation/mkdocs.yml -d documentation/site
+
+# Run PHP tests
+cd &quot;Desktop/Code Projects/Patone&quot;
+composer test
+
+# Run JavaScript tests  
+npm test
+
+# Check PHP code quality (if PHPStan installed)
+vendor/bin/phpstan analyse backend --level=7
+
+# Validate OpenAPI spec (if redoc-cli installed)
+redoc-cli validate documentation/docs/openapi.yaml
+</code></pre>
+<h3 id="github-actions-ci-setup">GitHub Actions CI Setup</h3>
+<p>Create <code>.github/workflows/ci.yml</code> to automate validation:</p>
+<pre><code class="language-yaml">name: CI
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: roadside_assistance_test
+        options: &gt;-
+          --health-cmd=&quot;mysqladmin ping&quot;
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.0'
+        extensions: pdo, pdo_mysql, mbstring, curl, zip, json
+
+    - name: Install Composer dependencies
+      working-directory: ./Desktop/Code\ Projects/Patone
+      run: composer install --prefer-dist --no-progress
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Install Node dependencies
+      working-directory: ./Desktop/Code\ Projects/Patone
+      run: npm install
+
+    - name: Run PHP tests
+      working-directory: ./Desktop/Code\ Projects/Patone
+      run: composer test
+      env:
+        DB_HOST: 127.0.0.1
+        DB_PORT: 3306
+        DB_DATABASE: roadside_assistance_test
+        DB_USERNAME: root
+        DB_PASSWORD: root
+
+    - name: Run JavaScript tests
+      working-directory: ./Desktop/Code\ Projects/Patone
+      run: npm test
+
+  docs:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Install MkDocs
+      run: pip install mkdocs
+
+    - name: Build documentation
+      run: mkdocs build -f documentation/mkdocs.yml -d documentation/site
+
+    - name: Deploy to GitHub Pages
+      if: github.ref == 'refs/heads/main'
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./documentation/site
+</code></pre>
+<h3 id="documentation-deployment">Documentation Deployment</h3>
+<p><strong>GitHub Pages Setup</strong>:
+1. Go to repository Settings → Pages
+2. Set source to "GitHub Actions"
+3. The CI will automatically deploy docs on main branch updates
+4. Documentation will be available at <code>https://username.github.io/repo-name</code></p>
+<p><strong>Alternative Hosting</strong>:
+- <strong>Netlify</strong>: Connect repo, set build command to <code>mkdocs build -f documentation/mkdocs.yml</code>, publish directory to <code>documentation/site</code>
+- <strong>Vercel</strong>: Similar setup with build command
+- <strong>AWS S3</strong>: Upload <code>documentation/site/</code> contents to S3 bucket with static hosting</p>
+<h3 id="quality-gates">Quality Gates</h3>
+<p>Recommended PR checks:
+- [ ] All tests pass (PHP + JavaScript)
+- [ ] MkDocs builds without errors
+- [ ] No PHPStan errors (if enabled)
+- [ ] OpenAPI spec validates (if tooling added)</p>
+<h3 id="manual-release-checklist">Manual Release Checklist</h3>
+<p>Before major releases:
+- [ ] Update version numbers in <code>package.json</code> and documentation
+- [ ] Review and update all documentation for accuracy
+- [ ] Test full local setup using developer setup guide
+- [ ] Generate fresh PHPDoc and commit any updates
+- [ ] Verify all links in documentation work
+- [ ] Update changelog/release notes</p>
+<p>Notes</p>
+<ul>
+<li>Automate as much as possible (linting, phpstan, phpunit) in CI for PR quality checks.</li>
+<li>Consider adding Lighthouse CI for performance testing of the documentation site.</li>
+<li>Set up branch protection rules to require CI checks before merging.</li>
+</ul></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

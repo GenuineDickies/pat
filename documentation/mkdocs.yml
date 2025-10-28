@@ -1,0 +1,26 @@
+site_name: Patone Documentation
+site_description: "Developer, Administrator and User documentation for the Patone Roadside Assistance platform"
+site_author: Patone Team
+nav:
+  - Home: index.md
+  - API:
+    - API Reference: api.md
+    - OpenAPI: openapi.yaml
+  - Developer:
+    - Setup Guide: developer-setup.md
+    - Code Architecture: code-architecture.md
+    - Technical Tasks: technical-tasks.md
+  - Database: database-schema.md
+  - Deployment: deployment-guide.md
+  - Admin Manual: admin-manual.md
+  - Driver App: driver-mobile-app.md
+  - Integration: integration-guide.md
+  - Troubleshooting: troubleshooting.md
+  - FAQ: faq.md
+plugins:
+  - search
+extra:
+  repository_url: https://github.com/GenuineDickies/pat
+  documentation_version: 1.0.0
+
+# If you later want Redoc or Swagger UI, add the appropriate plugin configuration here.

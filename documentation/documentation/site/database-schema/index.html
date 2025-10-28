@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <meta name="author" content="Patone Team">
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Database - Patone Documentation</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/fontawesome.min.css" rel="stylesheet">
+        <link href="../css/brands.min.css" rel="stylesheet">
+        <link href="../css/solid.min.css" rel="stylesheet">
+        <link href="../css/v4-font-face.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link id="hljs-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" >
+        <link id="hljs-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" disabled>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="..">Patone Documentation</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="nav-item">
+                                <a href=".." class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">API</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="../api/" class="dropdown-item">API Reference</a>
+</li>
+                                    
+<li>
+    <a href="../openapi.yaml" class="dropdown-item">OpenAPI</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"  aria-expanded="false">Developer</a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="../developer-setup/" class="dropdown-item">Setup Guide</a>
+</li>
+                                    
+<li>
+    <a href="../code-architecture/" class="dropdown-item">Code Architecture</a>
+</li>
+                                    
+<li>
+    <a href="../technical-tasks/" class="dropdown-item">Technical Tasks</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a href="./" class="nav-link active" aria-current="page">Database</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../deployment-guide/" class="nav-link">Deployment</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../admin-manual/" class="nav-link">Admin Manual</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../driver-mobile-app/" class="nav-link">Driver App</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../integration-guide/" class="nav-link">Integration</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../troubleshooting/" class="nav-link">Troubleshooting</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../faq/" class="nav-link">FAQ</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ms-md-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" href="../technical-tasks/" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="../deployment-guide/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-bs-toggle="collapse" data-bs-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-body-tertiary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-bs-level="1"><a href="#database-schema" class="nav-link">Database Schema</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-bs-level="2"><a href="#overview" class="nav-link">Overview</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#source-files" class="nav-link">Source Files</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#core-tables" class="nav-link">Core Tables</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#security-audit-tables" class="nav-link">Security &amp; Audit Tables</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#configuration-tables" class="nav-link">Configuration Tables</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#database-operations" class="nav-link">Database Operations</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#schema-maintenance" class="nav-link">Schema Maintenance</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-bs-level="2"><a href="#data-importexport" class="nav-link">Data Import/Export</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="database-schema">Database Schema</h1>
+<p>This document provides a comprehensive overview of the Patone Roadside Assistance platform database schema.</p>
+<h2 id="overview">Overview</h2>
+<ul>
+<li><strong>Database Name</strong>: <code>roadside_assistance</code> (production), <code>roadside_assistance_test</code> (testing)</li>
+<li><strong>Character Set</strong>: UTF8MB4 with <code>utf8mb4_unicode_ci</code> collation</li>
+<li><strong>Engine</strong>: InnoDB (supports transactions and foreign keys)</li>
+</ul>
+<h2 id="source-files">Source Files</h2>
+<ul>
+<li><code>database/schema.sql</code> — Complete schema with sample data</li>
+<li><code>database/migrations/</code> — Future migrations (if implemented)</li>
+<li><code>database/sample_customers_import.csv</code> — Sample customer import data</li>
+</ul>
+<h2 id="core-tables">Core Tables</h2>
+<h3 id="users-users">Users (<code>users</code>)</h3>
+<p><strong>Purpose</strong>: System users (admin, managers, dispatchers, drivers)</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>INT UNSIGNED AUTO_INCREMENT</td>
+<td>Primary key</td>
+</tr>
+<tr>
+<td><code>username</code></td>
+<td>VARCHAR(50) UNIQUE</td>
+<td>Login username</td>
+</tr>
+<tr>
+<td><code>email</code></td>
+<td>VARCHAR(100) UNIQUE</td>
+<td>Email address</td>
+</tr>
+<tr>
+<td><code>password</code></td>
+<td>VARCHAR(255)</td>
+<td>Hashed password</td>
+</tr>
+<tr>
+<td><code>first_name</code></td>
+<td>VARCHAR(50)</td>
+<td>User's first name</td>
+</tr>
+<tr>
+<td><code>last_name</code></td>
+<td>VARCHAR(50)</td>
+<td>User's last name</td>
+</tr>
+<tr>
+<td><code>role</code></td>
+<td>ENUM</td>
+<td>'admin', 'manager', 'dispatcher', 'driver'</td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td>ENUM</td>
+<td>'active', 'inactive', 'suspended'</td>
+</tr>
+<tr>
+<td><code>last_login</code></td>
+<td>DATETIME</td>
+<td>Last login timestamp</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Indexes</strong>: username, email, status</p>
+<h3 id="customers-customers">Customers (<code>customers</code>)</h3>
+<p><strong>Purpose</strong>: Customer profiles and contact information</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>INT UNSIGNED AUTO_INCREMENT</td>
+<td>Primary key</td>
+</tr>
+<tr>
+<td><code>first_name</code></td>
+<td>VARCHAR(50)</td>
+<td>Customer's first name</td>
+</tr>
+<tr>
+<td><code>last_name</code></td>
+<td>VARCHAR(50)</td>
+<td>Customer's last name</td>
+</tr>
+<tr>
+<td><code>email</code></td>
+<td>VARCHAR(100)</td>
+<td>Email address</td>
+</tr>
+<tr>
+<td><code>phone</code></td>
+<td>VARCHAR(20)</td>
+<td>Primary phone number</td>
+</tr>
+<tr>
+<td><code>emergency_contact</code></td>
+<td>VARCHAR(20)</td>
+<td>Emergency contact number</td>
+</tr>
+<tr>
+<td><code>address</code></td>
+<td>VARCHAR(255)</td>
+<td>Street address</td>
+</tr>
+<tr>
+<td><code>city</code></td>
+<td>VARCHAR(100)</td>
+<td>City</td>
+</tr>
+<tr>
+<td><code>state</code></td>
+<td>VARCHAR(50)</td>
+<td>State/province</td>
+</tr>
+<tr>
+<td><code>zip</code></td>
+<td>VARCHAR(20)</td>
+<td>Postal code</td>
+</tr>
+<tr>
+<td><code>is_vip</code></td>
+<td>BOOLEAN</td>
+<td>VIP customer status</td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td>ENUM</td>
+<td>'active', 'inactive', 'suspended'</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Indexes</strong>: name (last_name, first_name), email, phone, status, is_vip</p>
+<h3 id="customer-vehicles-customer_vehicles">Customer Vehicles (<code>customer_vehicles</code>)</h3>
+<p><strong>Purpose</strong>: Vehicle information for each customer</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>INT UNSIGNED AUTO_INCREMENT</td>
+<td>Primary key</td>
+</tr>
+<tr>
+<td><code>customer_id</code></td>
+<td>INT UNSIGNED</td>
+<td>FK to customers.id</td>
+</tr>
+<tr>
+<td><code>make</code></td>
+<td>VARCHAR(50)</td>
+<td>Vehicle make</td>
+</tr>
+<tr>
+<td><code>model</code></td>
+<td>VARCHAR(50)</td>
+<td>Vehicle model</td>
+</tr>
+<tr>
+<td><code>year</code></td>
+<td>INT</td>
+<td>Model year</td>
+</tr>
+<tr>
+<td><code>license_plate</code></td>
+<td>VARCHAR(20)</td>
+<td>License plate number</td>
+</tr>
+<tr>
+<td><code>vin</code></td>
+<td>VARCHAR(17)</td>
+<td>Vehicle identification number</td>
+</tr>
+<tr>
+<td><code>is_primary</code></td>
+<td>BOOLEAN</td>
+<td>Primary vehicle for customer</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Foreign Keys</strong>: customer_id → customers(id) ON DELETE CASCADE</p>
+<h3 id="drivers-drivers">Drivers (<code>drivers</code>)</h3>
+<p><strong>Purpose</strong>: Driver profiles, status, and location</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>INT UNSIGNED AUTO_INCREMENT</td>
+<td>Primary key</td>
+</tr>
+<tr>
+<td><code>user_id</code></td>
+<td>INT UNSIGNED</td>
+<td>FK to users.id (optional)</td>
+</tr>
+<tr>
+<td><code>license_number</code></td>
+<td>VARCHAR(50)</td>
+<td>Driver's license number</td>
+</tr>
+<tr>
+<td><code>license_state</code></td>
+<td>VARCHAR(50)</td>
+<td>Issuing state</td>
+</tr>
+<tr>
+<td><code>license_expiry</code></td>
+<td>DATE</td>
+<td>License expiration</td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td>ENUM</td>
+<td>'available', 'busy', 'offline', 'on_break'</td>
+</tr>
+<tr>
+<td><code>current_latitude</code></td>
+<td>DECIMAL(10, 8)</td>
+<td>GPS latitude</td>
+</tr>
+<tr>
+<td><code>current_longitude</code></td>
+<td>DECIMAL(11, 8)</td>
+<td>GPS longitude</td>
+</tr>
+<tr>
+<td><code>last_location_update</code></td>
+<td>DATETIME</td>
+<td>Last GPS update</td>
+</tr>
+<tr>
+<td><code>rating</code></td>
+<td>DECIMAL(3, 2)</td>
+<td>Driver rating (0.00-5.00)</td>
+</tr>
+<tr>
+<td><code>total_jobs</code></td>
+<td>INT</td>
+<td>Total jobs assigned</td>
+</tr>
+<tr>
+<td><code>completed_jobs</code></td>
+<td>INT</td>
+<td>Successfully completed jobs</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Foreign Keys</strong>: user_id → users(id) ON DELETE SET NULL<br />
+<strong>Indexes</strong>: name, status, location (lat/lng)</p>
+<h3 id="service-types-service_types">Service Types (<code>service_types</code>)</h3>
+<p><strong>Purpose</strong>: Catalog of available services</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>INT UNSIGNED AUTO_INCREMENT</td>
+<td>Primary key</td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td>VARCHAR(100)</td>
+<td>Service name</td>
+</tr>
+<tr>
+<td><code>description</code></td>
+<td>TEXT</td>
+<td>Service description</td>
+</tr>
+<tr>
+<td><code>base_price</code></td>
+<td>DECIMAL(10, 2)</td>
+<td>Base price</td>
+</tr>
+<tr>
+<td><code>estimated_duration</code></td>
+<td>INT</td>
+<td>Duration in minutes</td>
+</tr>
+<tr>
+<td><code>is_active</code></td>
+<td>BOOLEAN</td>
+<td>Active/inactive status</td>
+</tr>
+<tr>
+<td><code>priority</code></td>
+<td>INT</td>
+<td>Service priority level</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Default Services</strong>: Flat Tire Change, Jump Start, Fuel Delivery, Lockout Service, Towing, Winch Out, Battery Replacement, Minor Repair</p>
+<h3 id="service-requests-service_requests">Service Requests (<code>service_requests</code>)</h3>
+<p><strong>Purpose</strong>: Core table for service requests/jobs</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>INT UNSIGNED AUTO_INCREMENT</td>
+<td>Primary key</td>
+</tr>
+<tr>
+<td><code>customer_id</code></td>
+<td>INT UNSIGNED</td>
+<td>FK to customers.id</td>
+</tr>
+<tr>
+<td><code>driver_id</code></td>
+<td>INT UNSIGNED</td>
+<td>FK to drivers.id (nullable)</td>
+</tr>
+<tr>
+<td><code>service_type_id</code></td>
+<td>INT UNSIGNED</td>
+<td>FK to service_types.id</td>
+</tr>
+<tr>
+<td><code>vehicle_id</code></td>
+<td>INT UNSIGNED</td>
+<td>FK to customer_vehicles.id</td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td>ENUM</td>
+<td>'pending', 'assigned', 'in_progress', 'completed', 'cancelled'</td>
+</tr>
+<tr>
+<td><code>priority</code></td>
+<td>ENUM</td>
+<td>'low', 'normal', 'high', 'emergency'</td>
+</tr>
+<tr>
+<td><code>location_address</code></td>
+<td>VARCHAR(255)</td>
+<td>Service location address</td>
+</tr>
+<tr>
+<td><code>location_latitude</code></td>
+<td>DECIMAL(10, 8)</td>
+<td>GPS coordinates</td>
+</tr>
+<tr>
+<td><code>location_longitude</code></td>
+<td>DECIMAL(11, 8)</td>
+<td>GPS coordinates</td>
+</tr>
+<tr>
+<td><code>estimated_cost</code></td>
+<td>DECIMAL(10, 2)</td>
+<td>Estimated cost</td>
+</tr>
+<tr>
+<td><code>final_cost</code></td>
+<td>DECIMAL(10, 2)</td>
+<td>Actual final cost</td>
+</tr>
+<tr>
+<td><code>assigned_at</code></td>
+<td>DATETIME</td>
+<td>When assigned to driver</td>
+</tr>
+<tr>
+<td><code>started_at</code></td>
+<td>DATETIME</td>
+<td>When service started</td>
+</tr>
+<tr>
+<td><code>completed_at</code></td>
+<td>DATETIME</td>
+<td>When service completed</td>
+</tr>
+<tr>
+<td><code>rating</code></td>
+<td>INT</td>
+<td>Customer rating (1-5)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Foreign Keys</strong>:
+- customer_id → customers(id) ON DELETE CASCADE
+- driver_id → drivers(id) ON DELETE SET NULL
+- service_type_id → service_types(id) ON DELETE RESTRICT
+- vehicle_id → customer_vehicles(id) ON DELETE SET NULL</p>
+<h2 id="security-audit-tables">Security &amp; Audit Tables</h2>
+<h3 id="activity-logs-activity_logs">Activity Logs (<code>activity_logs</code>)</h3>
+<p><strong>Purpose</strong>: Audit trail for user actions</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>user_id</code></td>
+<td>INT UNSIGNED</td>
+<td>FK to users.id</td>
+</tr>
+<tr>
+<td><code>action</code></td>
+<td>VARCHAR(100)</td>
+<td>Action performed</td>
+</tr>
+<tr>
+<td><code>entity_type</code></td>
+<td>VARCHAR(50)</td>
+<td>Type of entity modified</td>
+</tr>
+<tr>
+<td><code>entity_id</code></td>
+<td>INT UNSIGNED</td>
+<td>ID of entity modified</td>
+</tr>
+<tr>
+<td><code>ip_address</code></td>
+<td>VARCHAR(45)</td>
+<td>User's IP address</td>
+</tr>
+</tbody>
+</table>
+<h3 id="login-attempts-login_attempts">Login Attempts (<code>login_attempts</code>)</h3>
+<p><strong>Purpose</strong>: Security monitoring for login attempts</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>username</code></td>
+<td>VARCHAR(100)</td>
+<td>Attempted username</td>
+</tr>
+<tr>
+<td><code>ip_address</code></td>
+<td>VARCHAR(45)</td>
+<td>Source IP</td>
+</tr>
+<tr>
+<td><code>success</code></td>
+<td>BOOLEAN</td>
+<td>Login success/failure</td>
+</tr>
+</tbody>
+</table>
+<h3 id="user-sessions-user_sessions">User Sessions (<code>user_sessions</code>)</h3>
+<p><strong>Purpose</strong>: Active user session management</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>user_id</code></td>
+<td>INT UNSIGNED</td>
+<td>FK to users.id</td>
+</tr>
+<tr>
+<td><code>session_token</code></td>
+<td>VARCHAR(255) UNIQUE</td>
+<td>Session token</td>
+</tr>
+<tr>
+<td><code>expires_at</code></td>
+<td>DATETIME</td>
+<td>Session expiration</td>
+</tr>
+</tbody>
+</table>
+<h2 id="configuration-tables">Configuration Tables</h2>
+<h3 id="settings-settings">Settings (<code>settings</code>)</h3>
+<p><strong>Purpose</strong>: System configuration key-value pairs</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>setting_key</code></td>
+<td>VARCHAR(100) UNIQUE</td>
+<td>Configuration key</td>
+</tr>
+<tr>
+<td><code>setting_value</code></td>
+<td>TEXT</td>
+<td>Configuration value</td>
+</tr>
+<tr>
+<td><code>setting_type</code></td>
+<td>ENUM</td>
+<td>'string', 'integer', 'boolean', 'json'</td>
+</tr>
+<tr>
+<td><code>is_public</code></td>
+<td>BOOLEAN</td>
+<td>Public/private setting</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Default Settings</strong>: site_name, max_dispatch_distance, business_hours, GPS tracking, notifications</p>
+<h3 id="reports-reports">Reports (<code>reports</code>)</h3>
+<p><strong>Purpose</strong>: Generated report metadata and file tracking</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>report_type</code></td>
+<td>VARCHAR(50)</td>
+<td>Type of report</td>
+</tr>
+<tr>
+<td><code>generated_by</code></td>
+<td>INT UNSIGNED</td>
+<td>FK to users.id</td>
+</tr>
+<tr>
+<td><code>parameters</code></td>
+<td>TEXT</td>
+<td>JSON encoded parameters</td>
+</tr>
+<tr>
+<td><code>file_path</code></td>
+<td>VARCHAR(255)</td>
+<td>Path to generated file</td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td>ENUM</td>
+<td>'pending', 'processing', 'completed', 'failed'</td>
+</tr>
+</tbody>
+</table>
+<h2 id="database-operations">Database Operations</h2>
+<h3 id="initial-setup">Initial Setup</h3>
+<pre><code class="language-sql">-- Create databases
+CREATE DATABASE roadside_assistance CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE roadside_assistance_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- Import schema
+mysql -u root -p roadside_assistance &lt; database/schema.sql
+mysql -u root -p roadside_assistance_test &lt; database/schema.sql
+</code></pre>
+<h3 id="common-queries">Common Queries</h3>
+<p><strong>Get active service requests</strong>:</p>
+<pre><code class="language-sql">SELECT sr.id, c.first_name, c.last_name, st.name as service_type, sr.status, sr.created_at
+FROM service_requests sr
+JOIN customers c ON sr.customer_id = c.id
+JOIN service_types st ON sr.service_type_id = st.id
+WHERE sr.status IN ('pending', 'assigned', 'in_progress')
+ORDER BY sr.created_at DESC;
+</code></pre>
+<p><strong>Driver performance</strong>:</p>
+<pre><code class="language-sql">SELECT d.first_name, d.last_name, d.rating, d.total_jobs, d.completed_jobs,
+       (d.completed_jobs / NULLIF(d.total_jobs, 0) * 100) as completion_rate
+FROM drivers d
+WHERE d.status = 'available'
+ORDER BY d.rating DESC;
+</code></pre>
+<p><strong>Customer service history</strong>:</p>
+<pre><code class="language-sql">SELECT sr.id, st.name, sr.status, sr.created_at, sr.final_cost, sr.rating
+FROM service_requests sr
+JOIN service_types st ON sr.service_type_id = st.id
+WHERE sr.customer_id = ? 
+ORDER BY sr.created_at DESC;
+</code></pre>
+<h2 id="schema-maintenance">Schema Maintenance</h2>
+<h3 id="backup">Backup</h3>
+<pre><code class="language-bash"># Full backup with data
+mysqldump -u root -p roadside_assistance &gt; backup_$(date +%Y%m%d).sql
+
+# Schema only
+mysqldump --no-data -u root -p roadside_assistance &gt; schema_backup.sql
+</code></pre>
+<h3 id="migrations">Migrations</h3>
+<ul>
+<li>Keep <code>database/schema.sql</code> as the canonical source</li>
+<li>For production updates, create migration scripts in <code>database/migrations/</code></li>
+<li>Test all schema changes against <code>roadside_assistance_test</code> first</li>
+</ul>
+<h3 id="performance-monitoring">Performance Monitoring</h3>
+<ul>
+<li>Monitor slow query log for optimization opportunities</li>
+<li>Key indexes are already in place for common queries</li>
+<li>Consider partitioning <code>activity_logs</code> and <code>login_attempts</code> by date for large datasets</li>
+</ul>
+<h2 id="data-importexport">Data Import/Export</h2>
+<h3 id="sample-data-import">Sample Data Import</h3>
+<pre><code class="language-bash"># Import sample customers (if CSV import script exists)
+mysql -u root -p roadside_assistance -e &quot;
+LOAD DATA LOCAL INFILE 'database/sample_customers_import.csv'
+INTO TABLE customers
+FIELDS TERMINATED BY ','
+ENCLOSED BY '\&quot;'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;&quot;
+</code></pre>
+<h3 id="regular-maintenance">Regular Maintenance</h3>
+<ul>
+<li>Archive old activity logs (older than 1 year)</li>
+<li>Clean up expired user sessions</li>
+<li>Monitor and optimize table sizes and indexes</li>
+</ul></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/bootstrap.bundle.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

@@ -1,0 +1,629 @@
+openapi: 3.0.3
+info:
+  title: Patone Roadside Assistance API
+  description: |
+    RESTful API for the Patone Roadside Assistance Admin Platform.
+    
+    This API enables integration with mobile apps and third-party services for managing
+    roadside assistance operations including customers, service requests, drivers, and reports.
+    
+    ## Authentication
+    All endpoints (except `/api/login`) require JWT authentication.
+    Include the token in the Authorization header: `Bearer <token>`
+    
+  version: 1.0.0
+  contact:
+    email: admin@roadsideassistance.com
+  license:
+    name: Proprietary
+    
+servers:
+  - url: http://localhost:8000/api
+    description: Development server
+  - url: https://your-domain.com/api
+    description: Production server (update before deployment)
+
+tags:
+  - name: Authentication
+    description: User authentication and token management
+  - name: Customers
+    description: Customer management operations
+  - name: Service Requests
+    description: Service request management
+  - name: Drivers
+    description: Driver management operations
+  - name: Reports
+    description: Reporting and analytics
+  - name: System
+    description: System information and utilities
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      
+  schemas:
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          example: "Error message"
+          
+    Customer:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        first_name:
+          type: string
+          example: "John"
+        last_name:
+          type: string
+          example: "Doe"
+        email:
+          type: string
+          format: email
+          example: "john@example.com"
+        phone:
+          type: string
+          example: "5551234567"
+        address:
+          type: string
+          example: "123 Main St"
+        city:
+          type: string
+          example: "New York"
+        state:
+          type: string
+          example: "NY"
+        zip:
+          type: string
+          example: "10001"
+        status:
+          type: string
+          enum: [active, inactive]
+          example: "active"
+        is_vip:
+          type: integer
+          example: 0
+        created_at:
+          type: string
+          format: date-time
+          
+    CustomerUpdate:
+      type: object
+      properties:
+        first_name:
+          type: string
+          example: "John"
+        last_name:
+          type: string
+          example: "Doe"
+        email:
+          type: string
+          format: email
+          example: "john@example.com"
+        phone:
+          type: string
+          example: "5551234567"
+        address:
+          type: string
+          example: "123 Main St"
+        city:
+          type: string
+          example: "New York"
+        state:
+          type: string
+          example: "NY"
+        zip:
+          type: string
+          example: "10001"
+        status:
+          type: string
+          enum: [active, inactive]
+          example: "active"
+        is_vip:
+          type: boolean
+          example: false
+          
+    ServiceRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 100
+        customer_id:
+          type: integer
+          example: 1
+        driver_id:
+          type: integer
+          nullable: true
+          example: 5
+        service_type_id:
+          type: integer
+          example: 2
+        status:
+          type: string
+          enum: [pending, assigned, in_progress, completed, cancelled]
+          example: "in_progress"
+        priority:
+          type: string
+          enum: [low, normal, high, urgent]
+          example: "normal"
+        location_address:
+          type: string
+          example: "123 Highway Dr"
+        location_city:
+          type: string
+          example: "Boston"
+        location_state:
+          type: string
+          example: "MA"
+        created_at:
+          type: string
+          format: date-time
+          
+    Driver:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 5
+        first_name:
+          type: string
+          example: "Mike"
+        last_name:
+          type: string
+          example: "Wilson"
+        email:
+          type: string
+          format: email
+          example: "mike@example.com"
+        phone:
+          type: string
+          example: "5552223333"
+        license_number:
+          type: string
+          example: "D1234567"
+        status:
+          type: string
+          enum: [available, busy, offline]
+          example: "available"
+        rating:
+          type: number
+          format: float
+          example: 4.8
+
+security:
+  - bearerAuth: []
+
+paths:
+  /login:
+    post:
+      tags:
+        - Authentication
+      summary: Authenticate user and get JWT token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                      user:
+                        type: object
+                      expires_in:
+                        type: integer
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /logout:
+    post:
+      tags:
+        - Authentication
+      summary: Logout and invalidate token
+      responses:
+        '200':
+          description: Logout successful
+
+  /refresh:
+    post:
+      tags:
+        - Authentication
+      summary: Refresh JWT token
+      responses:
+        '200':
+          description: Token refreshed successfully
+
+  /customers:
+    get:
+      tags:
+        - Customers
+      summary: Get list of customers
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 25
+            maximum: 100
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      customers:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Customer'
+                      total:
+                        type: integer
+                      limit:
+                        type: integer
+                      offset:
+                        type: integer
+    
+    post:
+      tags:
+        - Customers
+      summary: Create new customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - first_name
+                - last_name
+                - email
+                - phone
+                - address
+                - city
+                - state
+                - zip
+              properties:
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                phone:
+                  type: string
+                address:
+                  type: string
+                city:
+                  type: string
+                state:
+                  type: string
+                zip:
+                  type: string
+      responses:
+        '201':
+          description: Customer created successfully
+
+  /customers/{id}:
+    get:
+      tags:
+        - Customers
+      summary: Get customer by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+        '404':
+          description: Customer not found
+    
+    put:
+      tags:
+        - Customers
+      summary: Update customer
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerUpdate'
+      responses:
+        '200':
+          description: Customer updated successfully
+    
+    delete:
+      tags:
+        - Customers
+      summary: Delete customer
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Customer deleted successfully
+
+  /requests:
+    get:
+      tags:
+        - Service Requests
+      summary: Get list of service requests
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          schema:
+            type: integer
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, assigned, in_progress, completed, cancelled]
+      responses:
+        '200':
+          description: Successful response
+    
+    post:
+      tags:
+        - Service Requests
+      summary: Create new service request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - customer_id
+                - service_type_id
+                - location_address
+                - location_city
+                - location_state
+              properties:
+                customer_id:
+                  type: integer
+                service_type_id:
+                  type: integer
+                location_address:
+                  type: string
+                location_city:
+                  type: string
+                location_state:
+                  type: string
+      responses:
+        '201':
+          description: Request created successfully
+
+  /requests/{id}:
+    get:
+      tags:
+        - Service Requests
+      summary: Get service request by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+    
+    put:
+      tags:
+        - Service Requests
+      summary: Update service request
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Request updated successfully
+    
+    delete:
+      tags:
+        - Service Requests
+      summary: Delete service request
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Request deleted successfully
+
+  /drivers:
+    get:
+      tags:
+        - Drivers
+      summary: Get list of drivers
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          schema:
+            type: integer
+        - name: status
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+
+  /drivers/{id}:
+    get:
+      tags:
+        - Drivers
+      summary: Get driver by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+    
+    put:
+      tags:
+        - Drivers
+      summary: Update driver
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Driver updated successfully
+
+  /reports/daily:
+    get:
+      tags:
+        - Reports
+      summary: Generate daily report
+      parameters:
+        - name: date
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Successful response
+
+  /reports/monthly:
+    get:
+      tags:
+        - Reports
+      summary: Generate monthly report
+      parameters:
+        - name: year
+          in: query
+          schema:
+            type: integer
+        - name: month
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+
+  /reports/custom:
+    get:
+      tags:
+        - Reports
+      summary: Generate custom report
+      parameters:
+        - name: start_date
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Successful response
+
+  /dashboard-stats:
+    get:
+      tags:
+        - System
+      summary: Get dashboard statistics
+      responses:
+        '200':
+          description: Successful response
+
+  /service-types:
+    get:
+      tags:
+        - System
+      summary: Get list of service types
+      responses:
+        '200':
+          description: Successful response
