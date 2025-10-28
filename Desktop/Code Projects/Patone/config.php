@@ -49,8 +49,26 @@ define('UPLOAD_PATH', ROOT_PATH . 'uploads/');
 // Security Configuration
 define('ENCRYPTION_KEY', 'your-32-character-encryption-key-here');
 define('PASSWORD_MIN_LENGTH', 8);
+define('PASSWORD_REQUIRE_UPPERCASE', true);
+define('PASSWORD_REQUIRE_LOWERCASE', true);
+define('PASSWORD_REQUIRE_NUMBER', true);
+define('PASSWORD_REQUIRE_SPECIAL', true);
 define('LOGIN_ATTEMPTS', 5);
 define('LOCKOUT_TIME', 15 * 60); // 15 minutes
+define('SESSION_TIMEOUT', 30 * 60); // 30 minutes
+define('SESSION_REGENERATE_INTERVAL', 5 * 60); // 5 minutes
+
+// Rate Limiting Configuration
+define('RATE_LIMIT_LOGIN_ATTEMPTS', 5);
+define('RATE_LIMIT_LOGIN_WINDOW', 300); // 5 minutes
+define('RATE_LIMIT_API_ATTEMPTS', 100);
+define('RATE_LIMIT_API_WINDOW', 60); // 1 minute
+
+// HTTPS Enforcement (set to true in production)
+define('FORCE_HTTPS', false);
+
+// Content Security Policy
+define('CSP_ENABLED', true);
 
 // Include helper functions
 require_once INCLUDES_PATH . 'functions.php';
@@ -62,6 +80,26 @@ require_once BACKEND_PATH . 'config/database.php';
 header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: DENY');
 header('X-XSS-Protection: 1; mode=block');
+header('Referrer-Policy: strict-origin-when-cross-origin');
+header('Permissions-Policy: geolocation=(), microphone=(), camera=()');
+
+// Content Security Policy
+if (defined('CSP_ENABLED') && CSP_ENABLED) {
+    $csp = "default-src 'self'; ";
+    $csp .= "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://code.jquery.com https://stackpath.bootstrapcdn.com; ";
+    $csp .= "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://stackpath.bootstrapcdn.com https://fonts.googleapis.com; ";
+    $csp .= "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; ";
+    $csp .= "img-src 'self' data: https:; ";
+    $csp .= "connect-src 'self'; ";
+    $csp .= "frame-ancestors 'none';";
+    header("Content-Security-Policy: $csp");
+}
+
+// Force HTTPS in production
+if (defined('FORCE_HTTPS') && FORCE_HTTPS && !isset($_SERVER['HTTPS'])) {
+    header('Location: https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'], true, 301);
+    exit();
+}
 
 // Auto-load classes (simple autoloader)
 spl_autoload_register(function($className) {
@@ -74,6 +112,13 @@ spl_autoload_register(function($className) {
     
     // Try controllers directory
     $classFile = BACKEND_PATH . 'controllers/' . $className . '.php';
+    if (file_exists($classFile)) {
+        require_once $classFile;
+        return;
+    }
+    
+    // Try middleware directory
+    $classFile = BACKEND_PATH . 'middleware/' . $className . '.php';
     if (file_exists($classFile)) {
         require_once $classFile;
         return;

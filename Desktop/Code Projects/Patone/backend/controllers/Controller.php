@@ -56,6 +56,14 @@ class Controller {
         if (!isLoggedIn()) {
             $this->redirect(SITE_URL . 'login');
         }
+        
+        // Check session timeout
+        $security = SecurityMiddleware::getInstance();
+        if (!$security->checkSessionTimeout(SESSION_TIMEOUT)) {
+            session_unset();
+            session_destroy();
+            $this->redirectWithError(SITE_URL . 'login', 'Your session has expired. Please login again.');
+        }
     }
 
     // Check if user has permission
@@ -94,6 +102,14 @@ class Controller {
     protected function uploadFile($fileInputName, $destination = '') {
         if (!isset($_FILES[$fileInputName])) {
             return ['success' => false, 'error' => 'No file uploaded'];
+        }
+
+        // Use SecurityMiddleware for enhanced validation
+        $security = SecurityMiddleware::getInstance();
+        $validation = $security->validateFileUpload($_FILES[$fileInputName]);
+        
+        if (!$validation['valid']) {
+            return ['success' => false, 'errors' => $validation['errors']];
         }
 
         $result = uploadFile($_FILES[$fileInputName], $destination);
