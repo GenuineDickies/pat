@@ -469,6 +469,94 @@ class DataAnalyzer:
             'analysis_period_days': len(daily_totals)
         }
 
+    def _calculate_weekly_averages(self, daily_totals: pd.DataFrame) -> Dict:
+        """Calculate weekly revenue averages"""
+        daily_totals['week'] = pd.to_datetime(daily_totals['date']).dt.isocalendar().week
+        weekly_avg = daily_totals.groupby('week')['daily_revenue'].mean()
+        
+        return {
+            'weekly_averages': weekly_avg.to_dict(),
+            'avg_weekly_revenue': float(weekly_avg.mean())
+        }
+
+    def _analyze_service_revenue(self, df: pd.DataFrame) -> Dict:
+        """Analyze revenue by service type"""
+        service_revenue = df.groupby('service_type').agg({
+            'daily_revenue': 'sum',
+            'service_count': 'sum',
+            'avg_service_cost': 'mean'
+        }).to_dict('index')
+        
+        return service_revenue
+
+    def _predict_revenue(self, daily_totals: pd.DataFrame) -> Dict:
+        """Predict future revenue using simple moving average"""
+        if len(daily_totals) < 7:
+            return {'error': 'Insufficient data for prediction'}
+        
+        # Simple 7-day moving average prediction
+        recent_avg = daily_totals.tail(7)['daily_revenue'].mean()
+        
+        return {
+            'predicted_daily_revenue': float(recent_avg),
+            'predicted_weekly_revenue': float(recent_avg * 7),
+            'predicted_monthly_revenue': float(recent_avg * 30),
+            'confidence': 'medium'
+        }
+
+    def _identify_peak_periods(self, df: pd.DataFrame) -> Dict:
+        """Identify peak revenue periods"""
+        hourly_revenue = df.groupby('hour')['daily_revenue'].sum()
+        
+        peak_hours = hourly_revenue.nlargest(3).index.tolist()
+        
+        # Day of week analysis
+        df['date'] = pd.to_datetime(df['date'])
+        df['day_of_week'] = df['date'].dt.day_name()
+        daily_revenue = df.groupby('day_of_week')['daily_revenue'].sum()
+        peak_days = daily_revenue.nlargest(3).index.tolist()
+        
+        return {
+            'peak_hours': [int(h) for h in peak_hours],
+            'peak_days': peak_days,
+            'peak_hour_revenue': float(hourly_revenue.max()),
+            'off_peak_hour_revenue': float(hourly_revenue.min())
+        }
+
+    def _predict_customer_lifetime_value(self, df: pd.DataFrame) -> Dict:
+        """Predict customer lifetime value"""
+        if df.empty:
+            return {'error': 'No customer data available'}
+        
+        avg_services = df['total_services'].mean()
+        avg_spending = df['total_spent'].mean()
+        
+        # Simple CLV calculation
+        avg_clv = avg_spending
+        retention_factor = 0.8  # Assume 80% retention
+        projected_clv = avg_clv * (1 + retention_factor)
+        
+        return {
+            'average_current_value': float(avg_spending),
+            'average_services': float(avg_services),
+            'projected_lifetime_value': float(projected_clv),
+            'high_value_threshold': float(df['total_spent'].quantile(0.75))
+        }
+
+    def _identify_at_risk_customers(self, df: pd.DataFrame) -> List[Dict]:
+        """Identify customers at risk of churning"""
+        if df.empty:
+            return []
+        
+        # Customers who haven't used service in 90+ days
+        df['last_service_date'] = pd.to_datetime(df['last_service_date'])
+        df['days_since_service'] = (pd.Timestamp.now() - df['last_service_date']).dt.days
+        
+        at_risk = df[df['days_since_service'] > 90].copy()
+        at_risk = at_risk.sort_values('total_spent', ascending=False)
+        
+        return at_risk[['id', 'first_name', 'last_name', 'days_since_service', 'total_spent']].head(10).to_dict('records')
+
     # Additional helper methods would be implemented here...
 
 def main():

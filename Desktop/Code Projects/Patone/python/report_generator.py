@@ -409,6 +409,165 @@ class ReportGenerator:
         doc.build(story)
         print(f"Daily report generated: {filepath}")
 
+    def _get_monthly_statistics(self, conn, year: int, month: int) -> Dict:
+        """Get monthly statistics"""
+        cursor = conn.cursor(dictionary=True)
+        
+        start_date = f"{year}-{month:02d}-01"
+        import calendar
+        last_day = calendar.monthrange(year, month)[1]
+        end_date = f"{year}-{month:02d}-{last_day}"
+        
+        cursor.execute("""
+            SELECT COUNT(*) as total_requests,
+                   SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed_requests,
+                   SUM(CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END) as cancelled_requests,
+                   COALESCE(SUM(CASE WHEN status = 'completed' THEN actual_cost ELSE 0 END), 0) as total_revenue,
+                   AVG(CASE WHEN status = 'completed' THEN actual_cost END) as avg_service_cost
+            FROM service_requests
+            WHERE DATE(created_at) BETWEEN %s AND %s
+        """, (start_date, end_date))
+        
+        stats = cursor.fetchone()
+        cursor.close()
+        return stats
+
+    def _get_monthly_trends(self, conn, year: int, month: int) -> List[Dict]:
+        """Get monthly trends"""
+        cursor = conn.cursor(dictionary=True)
+        
+        start_date = f"{year}-{month:02d}-01"
+        import calendar
+        last_day = calendar.monthrange(year, month)[1]
+        end_date = f"{year}-{month:02d}-{last_day}"
+        
+        cursor.execute("""
+            SELECT DATE(created_at) as date,
+                   COUNT(*) as total,
+                   SUM(CASE WHEN status = 'completed' THEN actual_cost ELSE 0 END) as revenue
+            FROM service_requests
+            WHERE DATE(created_at) BETWEEN %s AND %s
+            GROUP BY DATE(created_at)
+            ORDER BY date
+        """, (start_date, end_date))
+        
+        results = cursor.fetchall()
+        cursor.close()
+        return results
+
+    def _get_top_customers(self, conn, year: int, month: int) -> List[Dict]:
+        """Get top customers for the month"""
+        cursor = conn.cursor(dictionary=True)
+        
+        start_date = f"{year}-{month:02d}-01"
+        import calendar
+        last_day = calendar.monthrange(year, month)[1]
+        end_date = f"{year}-{month:02d}-{last_day}"
+        
+        cursor.execute("""
+            SELECT c.first_name, c.last_name,
+                   COUNT(sr.id) as service_count,
+                   SUM(sr.actual_cost) as total_spent
+            FROM customers c
+            JOIN service_requests sr ON c.id = sr.customer_id
+            WHERE DATE(sr.created_at) BETWEEN %s AND %s
+                  AND sr.status = 'completed'
+            GROUP BY c.id, c.first_name, c.last_name
+            ORDER BY total_spent DESC
+            LIMIT 10
+        """, (start_date, end_date))
+        
+        results = cursor.fetchall()
+        cursor.close()
+        return results
+
+    def _get_service_type_analysis(self, conn, year: int, month: int) -> Dict:
+        """Get service type analysis"""
+        cursor = conn.cursor(dictionary=True)
+        
+        start_date = f"{year}-{month:02d}-01"
+        import calendar
+        last_day = calendar.monthrange(year, month)[1]
+        end_date = f"{year}-{month:02d}-{last_day}"
+        
+        cursor.execute("""
+            SELECT st.name,
+                   COUNT(sr.id) as request_count,
+                   SUM(CASE WHEN sr.status = 'completed' THEN sr.actual_cost ELSE 0 END) as revenue
+            FROM service_types st
+            LEFT JOIN service_requests sr ON st.id = sr.service_type_id
+                  AND DATE(sr.created_at) BETWEEN %s AND %s
+            GROUP BY st.id, st.name
+            ORDER BY request_count DESC
+        """, (start_date, end_date))
+        
+        results = cursor.fetchall()
+        cursor.close()
+        return {'service_types': results}
+
+    def _get_customer_details(self, conn, customer_id: int) -> Dict:
+        """Get customer details"""
+        cursor = conn.cursor(dictionary=True)
+        
+        cursor.execute("""
+            SELECT * FROM customers WHERE id = %s
+        """, (customer_id,))
+        
+        result = cursor.fetchone()
+        cursor.close()
+        return result
+
+    def _get_customer_service_history(self, conn, customer_id: int) -> List[Dict]:
+        """Get customer service history"""
+        cursor = conn.cursor(dictionary=True)
+        
+        cursor.execute("""
+            SELECT sr.*, st.name as service_type_name
+            FROM service_requests sr
+            LEFT JOIN service_types st ON sr.service_type_id = st.id
+            WHERE sr.customer_id = %s
+            ORDER BY sr.created_at DESC
+            LIMIT 50
+        """, (customer_id,))
+        
+        results = cursor.fetchall()
+        cursor.close()
+        return results
+
+    def _get_customer_spending_analysis(self, conn, customer_id: int) -> Dict:
+        """Get customer spending analysis"""
+        cursor = conn.cursor(dictionary=True)
+        
+        cursor.execute("""
+            SELECT COUNT(*) as total_services,
+                   SUM(actual_cost) as total_spent,
+                   AVG(actual_cost) as avg_per_service,
+                   MAX(actual_cost) as max_spent
+            FROM service_requests
+            WHERE customer_id = %s AND status = 'completed'
+        """, (customer_id,))
+        
+        result = cursor.fetchone()
+        cursor.close()
+        return result
+
+    def _get_customer_loyalty_metrics(self, conn, customer_id: int) -> Dict:
+        """Get customer loyalty metrics"""
+        cursor = conn.cursor(dictionary=True)
+        
+        cursor.execute("""
+            SELECT MIN(created_at) as first_service,
+                   MAX(created_at) as last_service,
+                   DATEDIFF(NOW(), MIN(created_at)) as days_as_customer,
+                   COUNT(*) as total_services
+            FROM service_requests
+            WHERE customer_id = %s
+        """, (customer_id,))
+        
+        result = cursor.fetchone()
+        cursor.close()
+        return result
+
     def _create_monthly_report_pdf(self, filepath: str, year: int, month: int,
                                  monthly_stats: Dict, trends: List[Dict],
                                  top_customers: List[Dict], service_analysis: Dict):
