@@ -735,7 +735,7 @@ button {
 
     .form-control,
     .form-select {
-        font-size: 16px; /* Prevent zoom on iOS */
+        font-size: 16px; /* Prevent iOS Safari zoom on focus (iOS zooms when font-size < 16px) */
     }
 
     /* Table improvements for mobile */
