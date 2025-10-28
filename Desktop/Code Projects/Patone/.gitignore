@@ -118,6 +118,11 @@ error-*.log
 # Test Coverage
 coverage/
 .nyc_output/
+.phpunit.result.cache
+tests/_output/
+playwright-report/
+test-results/
+.playwright/
 
 # Miscellaneous
 *.pem
