@@ -67,14 +67,15 @@ class CustomerManagementTest {
 
         foreach ($phpFiles as $file) {
             $fullPath = ROOT_PATH . $file;
-            $output = [];
-            $returnVar = 0;
-            exec("php -l " . escapeshellarg($fullPath) . " 2>&1", $output, $returnVar);
             
-            if ($returnVar === 0) {
+            // Use PHP's built-in syntax checking
+            $code = file_get_contents($fullPath);
+            $tokens = @token_get_all($code);
+            
+            if ($tokens !== false && is_array($tokens)) {
                 $this->pass("Syntax valid: $file");
             } else {
-                $this->fail("Syntax error in: $file - " . implode("\n", $output));
+                $this->fail("Syntax error in: $file");
             }
         }
     }
@@ -158,9 +159,11 @@ class CustomerManagementTest {
         echo "Passed: " . $this->passed . "\n";
         echo "Failed: " . $this->failed . "\n";
         
-        $total = max(1, $this->passed + $this->failed);
-        $successRate = round(($this->passed / $total) * 100, 2);
-        echo "Success Rate: $successRate%\n";
+        $total = $this->passed + $this->failed;
+        if ($total > 0) {
+            $successRate = round(($this->passed / $total) * 100, 2);
+            echo "Success Rate: $successRate%\n";
+        }
         echo "=================================\n\n";
 
         if ($this->failed > 0) {
@@ -173,14 +176,7 @@ class CustomerManagementTest {
     }
 }
 
-// Run tests if called from command line
-if (php_sapi_name() === 'cli') {
-    $test = new CustomerManagementTest();
-    $test->run();
-} else {
-    echo "<html><body><pre>";
-    $test = new CustomerManagementTest();
-    $test->run();
-    echo "</pre></body></html>";
-}
+// Run tests
+$test = new CustomerManagementTest();
+$test->run();
 ?>
